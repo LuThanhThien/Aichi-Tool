@@ -9,6 +9,7 @@ const displayNumber = 50
 // const { readCustomerData } = require('./utils')
 
 // List of accounts
+const testAccounts = ['luthien5921@gmail.com', 'giathanh010101@gmail.com', 'piechipiechipeach@gmail.com', 'piechipiechipeach@gmail.com', 'piechipeach@gmail.com', 'nqkhanhtoan@gmail.com']
 const accounts = [
    // TEST
    { username: 'luthien5921@gmail.com', password: 'aichi@5921' },       
@@ -44,7 +45,8 @@ const infoFake = {
    lastName: ['Nguyen', 'Tran', 'Le', 'Vo', 'Pham', 'Hoang', 'Huynh', 'Phan', 'Vu', 'Dang'],
    firstName: ['Thuan Thien', 'Le Ly', 'Hong Thi', 'Khanh Van', 'Thuy Duong', 'Hoai Nam', 'Phuong Thao', 'Hoan Nhung', 'Nhat Tan', 'Thi Thanh', 'Thanh Thao', 'Thanh Nguyen'],
    dateBirth: ['20010302', '19940505', '19970224', '20030606', '19920101', '19950101', '19940224', '19940606', '19950101', '20000303', '19950409', '20000312', '20010905'],
-   gender: ['男性', '女性'],
+   // gender: ['男性', '女性'],
+   gender: ['M', 'F'],
    phoneNumber: ['0801234567', '0809876543', '0805678912', '0802468135', '0803692584', '0801234567', '0809876543', '0805678912', '0802468135', '0803692584'],
    phoneNumberHash: ['080-1234-5673', '080-9876-5435', '080-5678-9121', '080-2468-1355', '080-3692-5840', '080-1234-5673', '080-9876-5435', '080-5678-9121', '080-2468-1355', '080-3692-5840'],
    nation: ['151'],
@@ -57,7 +59,22 @@ const infoFake = {
 
 const { load } = require('csv-load-sync');
 const customerData = load('./data/customers.csv');
+// for (cust of customerData) {
+//    cust.used = false
+// }
 // console.log(customerData)
+
+// for (cust of customerData) {
+//    console.log(cust.firstName, cust.firstName.length)
+//    console.log(cust.lastName, cust.lastName.length)
+//    console.log(cust.dateBirth, cust.dateBirth.length)
+//    console.log(cust.gender, cust.gender.length)
+//    console.log(cust.nation, cust.nation.length)
+//    console.log(cust.country, cust.country.length)
+//    console.log(cust.phoneNumberHash, cust.phoneNumberHash.length)
+//    break
+// }
+
 
 
 // exports
@@ -67,6 +84,7 @@ module.exports = {
    inqueryUrl,
    detailBaseUrl,
    accounts,
+   testAccounts,
    logFolderName,
    filterKeyword,
    displayNumber,

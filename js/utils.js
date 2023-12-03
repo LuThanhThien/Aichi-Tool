@@ -152,7 +152,6 @@ module.exports = {
    getAllNames,
    captureHTML,
    isTodayOrPast,
-   // readCustomerData,
  }
  
 
