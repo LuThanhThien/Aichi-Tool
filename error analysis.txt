@@ -6,9 +6,12 @@ running continously
 - log: log pictures named by date?
 - find upcomming forms in advanced 
 - find released forms from others accounts
+- if account accidentally logout when access form --> login again. how to know an account is logged in?
+- if one browser or page is accidentally exit, still running other 
 
 customer query app
 - where is the database of the customer?
 - in what form of data (csv, excel, database?)
 - offline data or online data?
 - what is the purpose of query app: extract inform for printing, for observe, for quick finding purpose, ...?
+

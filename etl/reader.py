@@ -28,7 +28,11 @@ def read_create(txt_path, df, nation_df, country_df):
          if customer_line == 0:
             name = line.strip()
             lastName = name.split()[0].strip()
-            firstName = name.split(" ", maxsplit=1)[1].strip()
+            rawFirstName = name.split(" ", maxsplit=1)[1].strip()
+            firstName = "" 
+            for i in range(min(len(rawFirstName.split()), 2)):
+               firstName += rawFirstName.split()[i] + " "
+            firstName = firstName.strip()
             df.loc[n, "firstName"] = firstName
             df.loc[n, "lastName"] = lastName
             # print("Customer name: " + firstName + " " + lastName)   
