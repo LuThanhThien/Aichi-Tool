@@ -3,7 +3,8 @@ const config = require('../config')
 const utils = require('../utils')
 const logger = require('../workers/Logger')
 const puppeteer = require('puppeteer')
-const accountManager = require('../managers/AccountManager')
+const accountManager = require('./AccountManager')
+const formManager = require('./FormManager')
 
 async function droper(capture=false) {
    async function confirm(password) {
@@ -46,6 +47,7 @@ async function droper(capture=false) {
    }
 }
 
+
 async function dropAll(page, account, capture=false) {
    let startTime = logger.logging(0)
    
@@ -58,38 +60,10 @@ async function dropAll(page, account, capture=false) {
    if (capture) { await page.screenshot({path: `${logger.logPath}/${account.username}/inquery.png`, fullPage: true}) }
 
    // find all inquery forms
-   let listItems = await page.evaluate(config => {
-      let tableRows = document.querySelectorAll('table tbody tr'); // Select all table rows
-      let items = []; // Array to store the items
-
-      tableRows.forEach((row, index) => {
-         if(index !== 0) { // Skip the header row
-            let item = {};
-            let cells = row.querySelectorAll('td'); // Select all cells in the row
-
-            item.id = cells[0].textContent.trim();
-            item.name = cells[1].textContent.trim();
-            item.contact = cells[2].textContent.trim();
-            item.date = cells[3].textContent.trim();
-            item.status = cells[4].textContent.trim();
-
-            // Get the onclick attribute of the button
-            let button = cells[5].querySelector('input[type="submit"]'); // Select the 'input' element in the last cell
-            if(button) {
-               item.buttonId = button.getAttribute('id');
-            }
-
-            items.push(item); // Add the item to the array
-         }
-      })
-      return items
-   }, config)
-   
-   // filter items if status is '"処理待ち"'
-   const inqueryStatus = "処理待ち"
-   listItems = listItems.filter(item => item.status.includes(inqueryStatus))    // deep-filter with exact keyword
+   let listItems = await formManager.findInqueryForms(page)
    // console.log(listItems)
 
+   // delete all inquery forms
    if (listItems.length == 0) {
       startTime = logger.logging(startTime, account, "No inquery form found - END")
       return
@@ -136,6 +110,6 @@ async function dropAll(page, account, capture=false) {
    startTime = logger.logging(startTime, null, "Deletion process finished - END")
 }
 
-module.exports = {
-   droper,
+module.exports = {   
+   droper, dropAll,
 }

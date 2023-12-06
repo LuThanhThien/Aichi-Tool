@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer')
 const config = require('../config')
 const utils = require('../utils')
 const logger = require('./Logger')
+const accountManager = require('../managers/AccountManager')
 
 function generate() {
    // This function is used to generate random customer data
@@ -17,7 +18,7 @@ function generate() {
    return customerData
 }
 
-module.exports = async function(loggedPages, accounts, maxForms=3) {
+async function distribute(loggedPages, accounts, maxForms=3) {
    let startTimeAll = logger.logging(0)
    let disPages = []                            // store distributed pages
    const numAccounts = accounts.length          // number of accounts
@@ -38,5 +39,10 @@ module.exports = async function(loggedPages, accounts, maxForms=3) {
       }
    }
    startTimeAll = logger.logging(startTimeAll, null, `Distributed ${disPages.length} pages to accounts`)
+   return disPages
+}
+
+module.exports = async function(loggedPages, accounts, maxForms=3) {
+   let disPages = distribute(loggedPages, accounts, maxForms)
    return disPages
 }

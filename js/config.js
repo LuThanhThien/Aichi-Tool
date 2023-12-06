@@ -79,11 +79,15 @@ const customerData = load('./data/customers.csv');
 
 // console.log(customerData)
 
+const formJSONPath = "./input/forms.json"
+const accountJSONPath = "./input/accounts.json"
+
 // exports
 module.exports = {
    mainUrl, logInUrl, inqueryUrl, detailBaseUrl,
    accounts, testAccounts,
    DateCombined, DateComponents,
    filterKeyword, displayNumber,
-   infoFake, customerData, infoCol,
+   infoFake, customerData, infoCol, 
+   formJSONPath, accountJSONPath,
 }

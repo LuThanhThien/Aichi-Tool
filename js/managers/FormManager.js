@@ -1,9 +1,11 @@
 // Description: This file contains the functions that are used to manage the forms.
 const puppeteer = require('puppeteer');
+const fs = require('fs');  
 const config = require('../config');
 const utils = require('../utils');
 const logger = require('../workers/Logger');
 const { link } = require('fs');
+const { log } = require('console');
 
 async function filter(page, account, keyword=config.filterKeyword) {
    let startTime = logger.logging(0)
@@ -300,10 +302,100 @@ async function checkAvailability(page, account, form, i) {
    }
 }
 
+async function findInqueryForms(page) {
+   // find all inquery forms
+   let listItems = await page.evaluate(config => {
+      let tableRows = document.querySelectorAll('table tbody tr'); // Select all table rows
+      let items = []; // Array to store the items
+
+      tableRows.forEach((row, index) => {
+         if(index !== 0) { // Skip the header row
+            let item = {};
+            let cells = row.querySelectorAll('td'); // Select all cells in the row
+
+            item.id = cells[0].textContent.trim();
+            item.name = cells[1].textContent.trim();
+            item.contact = cells[2].textContent.trim();
+            item.date = cells[3].textContent.trim();
+            item.status = cells[4].textContent.trim();
+
+            // Get the onclick attribute of the button
+            let button = cells[5].querySelector('input[type="submit"]'); // Select the 'input' element in the last cell
+            if(button) {
+               item.buttonId = button.getAttribute('id');
+            }
+
+            items.push(item); // Add the item to the array
+         }
+      })
+      return items
+   }, config)
+   
+   // filter items if status is '"処理待ち"'
+   const inqueryStatus = "処理待ち"
+   listItems = listItems.filter(item => item.status.includes(inqueryStatus))    // deep-filter with exact keyword
+   // console.log(listItems)
+
+   return listItems
+}
+
+
+// API for interact between workers
+function exportJSON(disForms, path=config.formJSONPath) {
+   let json = JSON.stringify(disForms, null, 2); // The third argument (2) is for indentation
+   fs.writeFile(path, json, 'utf8', (err) => {
+      if (err) {
+         logger.logging(0, null, "ERROR: Cannot write JSON data to " + path)
+         console.log(err)
+      }
+   })
+   logger.logging(0, null, "JSON data has been written to " + path)
+}
+
+function importJSON(path=config.formJSONPath) {
+   try {
+      const jsonString = fs.readFileSync(path, 'utf8')
+      const jsonObject = JSON.parse(jsonString)
+      logger.logging(0, null, 'Received JSON file successfully')
+      return jsonObject
+   }
+   catch(err) {
+      logger.logging(0, null, 'ERROR: Cannot read JSON file or JSON file is empty')
+      console.log(err)
+      return {}
+   }
+}
+
+function checkJSON(newJSONObj, path=config.formJSONPath) {
+   try {
+      const oldJSONObj = importJSON(path)
+      for (let i = 0; i < oldJSONObj.length; i++) {
+         delete oldJSONObj[i].distance
+      }
+      for (let i = 0; i < newJSONObj.length; i++) {
+         delete newJSONObj[i].distance
+      }
+      if (JSON.stringify(oldJSONObj) === JSON.stringify(newJSONObj)) {
+         logger.logging(0, null, 'JSON Objects are the same')
+         return true
+      }
+      else {
+         logger.logging(0, null, 'JSON Objects are different')
+         return false
+      }
+   }
+   catch(err) {
+      logger.logging(0, null, 'ERROR: Cannot check JSON Objects')
+      console.log(err)
+      return false
+   }
+}
 
 module.exports = {
    finder,
    distributor,
    collector,
    filler,
+   findInqueryForms,
+   exportJSON, importJSON, checkJSON,
 }

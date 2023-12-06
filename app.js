@@ -3,7 +3,9 @@ const { program } = require('commander');
 const config = require('./js/config')
 
 // objects
-const formEliminator = require('./js/managers/FormEliminator')
+const formEliminator = require('./js/managers/FormInquery')
+const formManager = require('./js/managers/FormManager')
+const accountManager = require('./js/managers/AccountManager')
 
 // workers 
 const logger = require('./js/workers/Logger')
@@ -17,6 +19,24 @@ const Filler = require('./js/workers/Filler');
 logger.logger()
 
 // tool
+async function FINDER(keyword='Hirabari') {
+   try {
+      const isHeadless = 'new'                         // headless mode
+      let { listForms, formBrowser, formPage } = await Finder(keyword, isHeadless)
+      maxLoop = -1                                        // infinite loop
+      while (maxLoop > 0 || maxLoop === -1) {
+         let listForms = await formManager.collector(formPage, keyword, config.displayNumber, false)     // find valid forms
+         formManager.exportJSON(listForms)        
+         if (maxLoop > 0) { maxLoop-- }
+      }
+   }
+   catch (err) {
+      logger.logging(0, null, `FINDER ERROR: ${err}`)
+      console.log(err)
+   }      
+}
+
+
 async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=10000) {
    const accounts = config.accounts                                  // list of accounts
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
@@ -26,38 +46,54 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
       `ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
-   const [
+   let [ 
       { listForms, formBrowser, formPage },
-      loggedPages
+      loggedPages 
+   ] = await Promise.all([
+      Finder(keyword, 'new'),                // find all available forms
+      Accountor(accounts, isHeadless)        // login all accounts
+   ])                 
+   
+   let reRun = 0
+   let disPages = []                        
+   let filledForms = formManager.importJSON(config.accountJSONPath) || {}   // store filled forms
+   let failStore = []
+   let totalSuccess = 0
+   while (true) {
+      // DISTRIBUTE FORMS TO ACCOUNTS IN ADVANCE
+      [
+         listForms,
+         disPages 
       ] = await Promise.all([
-         Finder(keyword, "new"),                    // find valid forms
-         Accountor(accounts, isHeadless)                 // login all accounts
-      ]);
+         formManager.finder(formPage, null, keyword),
+         Distributor(loggedPages, accounts, maxForms)
+      ])
 
-   // DISTRIBUTE FORMS TO ACCOUNTS IN ADVANCE
-   let disPages = await Distributor(loggedPages, accounts, maxForms)
-   // for (p of disPages) {
-   //    console.log(p.info)
-   // }
-   // return
 
-   // AUTO FILL FORMS
-   startTimeAll = logger.logging(startTimeAll, null, "Auto fill forms - BEGIN")
-   let { failStore, totalSuccess } = await Filler(disPages, listForms, capture, test)
+      // AUTO FILL FORMS
+      failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test)
 
-   // LOG FAILS AND SUCCESSFUL FORMS
-   if (failStore.length > 0) {
-      console.log(`FAILED FORMS: ${failStore.length}`)
-      failStore.forEach((fail, i) => {
-         console.log(`<${i+1}>. [${fail.account}] form [${fail.number}] - ${fail.title}`)
-      })
+      // LOG FAILS AND SUCCESSFUL FORMS
+      if (failStore.length > 0) {
+         console.log(`FAILED FORMS: ${failStore.length}`)
+         failStore.forEach((fail, i) => {
+            console.log(`<${i+1}>. [${fail.account}] form [${fail.number}] - ${fail.title}`)
+         })
+      }
+      else {
+         console.log(`ALL SUCCESSFUL`)
+      }
+      console.log(`TOTAL SUCCESSFUL FORMS: ${totalSuccess}`)
+      startTimeAll = logger.logging(0, null, `Re-run: ${reRun}, Filled forms:`)
+      console.log(filledForms)
+      formManager.exportJSON(filledForms, config.accountJSONPath)
+      logger.logging(startTimeAll, null, "ALL FINISHED")
+      
+      new Promise(resolve => setTimeout(resolve, 1000));
+
+      reRun++
+      if (reRun >= maxRenit && maxRenit !== 0) { break }
    }
-   else {
-      console.log(`ALL SUCCESSFUL`)
-   }
-   console.log(`TOTAL SUCCESSFUL FORMS: ${totalSuccess}`)
-
-   logger.logging(startTimeAll, null, "ALL FINISHED")
 }
 
 
@@ -66,7 +102,7 @@ program
    .option('--tool')
    .option('--keyword <string>')
    .option('--max-renit <number>')
-   .option('--headless')
+   .option('--headless')   
    .option('--capture')
 program.parse();
 
