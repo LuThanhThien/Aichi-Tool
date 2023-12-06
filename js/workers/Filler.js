@@ -19,7 +19,7 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
          filledForms[thisAccount.username] = []
       }
       if (filledForms[thisAccount.username].length >= 3) {
-         startTimeInner = logger.logging(startTimeInner, thisAccount, `This account has reach max forms - END`)
+         // startTimeInner = logger.logging(startTimeInner, thisAccount, `This account has reach max forms - END`)
          return
       }
       

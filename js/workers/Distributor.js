@@ -38,7 +38,7 @@ async function distribute(loggedPages, accounts, maxForms=3) {
          disPages[j].info.push(info)
       }
    }
-   startTimeAll = logger.logging(startTimeAll, null, `Distributed ${disPages.length} pages to accounts`)
+   // startTimeAll = logger.logging(startTimeAll, null, `Distributed ${disPages.length} pages to accounts`)
    return disPages
 }
 

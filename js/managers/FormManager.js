@@ -349,14 +349,14 @@ function exportJSON(disForms, path=config.formJSONPath) {
          console.log(err)
       }
    })
-   logger.logging(0, null, "JSON data has been written to " + path)
+   // logger.logging(0, null, "JSON data has been written to " + path)
 }
 
 function importJSON(path=config.formJSONPath) {
    try {
       const jsonString = fs.readFileSync(path, 'utf8')
       const jsonObject = JSON.parse(jsonString)
-      logger.logging(0, null, 'Received JSON file successfully')
+      // logger.logging(0, null, 'Received JSON file successfully')
       return jsonObject
    }
    catch(err) {

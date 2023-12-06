@@ -30,7 +30,7 @@ async function droper(capture=false) {
       await Promise.all(accounts.map(async (account) => {
          let startTimeInner = logger.logging(0)
          if (config.testAccounts.includes(account.username)) {
-            const browser = await puppeteer.launch({ headless: false })
+            const browser = await puppeteer.launch({ headless: 'new' })
             const page = await browser.newPage()
             await page.goto(config.mainUrl)
             await dropAll(page, account, capture);

@@ -56,7 +56,6 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
    
    let reRun = 0
    let disPages = []                        
-   let filledForms = formManager.importJSON(config.accountJSONPath) || {}   // store filled forms
    let failStore = []
    let totalSuccess = 0
    while (true) {
@@ -69,7 +68,16 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
          Distributor(loggedPages, accounts, maxForms)
       ])
 
+      // REALOAD DISPAGES
+      if (reRun % 20 === 0) {
+         startTimeAll = logger.logging(startTimeAll, loggedPages.account, `RELOAD ACCOUNT PAGES`)
+         await Promise.all(disPages.map(async (loggedPages, pageIndex) => {
+            const thisPage = loggedPages.page
+            await thisPage.reload()
+         }))
+      }
 
+      let filledForms = formManager.importJSON(config.accountJSONPath) || {}   // store filled forms
       // AUTO FILL FORMS
       failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test)
 
@@ -80,19 +88,15 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
             console.log(`<${i+1}>. [${fail.account}] form [${fail.number}] - ${fail.title}`)
          })
       }
-      else {
-         console.log(`ALL SUCCESSFUL`)
+      if (totalSuccess > 0) {
+         console.log(`TOTAL SUCCESSFUL FORMS: ${totalSuccess}`)
       }
-      console.log(`TOTAL SUCCESSFUL FORMS: ${totalSuccess}`)
-      startTimeAll = logger.logging(0, null, `Re-run: ${reRun}, Filled forms:`)
-      console.log(filledForms)
       formManager.exportJSON(filledForms, config.accountJSONPath)
-      logger.logging(startTimeAll, null, "ALL FINISHED")
       
-      new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(r => setTimeout(r, 1000))
 
       reRun++
-      if (reRun >= maxRenit && maxRenit !== 0) { break }
+      // if (maxRenit !== 0 && reRun >= maxRenit) { break }
    }
 }
 
