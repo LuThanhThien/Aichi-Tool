@@ -10,17 +10,20 @@ function logger() {
    // init logger
    initLogger()
    // create log txt file
-   var log_file = fs.createWriteStream(logPath + `/${config.DateCombined.thisTimeLog}.log`, {flags : 'w'});
-   var log_stdout = process.stdout;
+   var log_file = fs.createWriteStream(logPath + `/${config.DateCombined.thisTimeLog}.log`, {flags : 'w'})
+   var log_stdout = process.stdout
+   const originalConsoleLog = console.log;
    // override console.log
-   console.log = function(d) { //
-   log_file.write(util.format(d) + '\n');
-   log_stdout.write(util.format(d) + '\n');
-   };
+   console.log = function(d,log=true) { //
+      if (log) {
+         log_file.write(util.format(d) + '\n')
+      }
+      log_stdout.write(util.format(d) + '\n')
+   }
 }
 
 // for logging info
-function logging(startTime, account=null, text=null) {
+function logging(startTime, account=null, text=null, log=true) {
    if (startTime === 0 && text === null && account === null) {
       return 0;
    }
@@ -31,14 +34,14 @@ function logging(startTime, account=null, text=null) {
 
    if (text !== null) {
       if (account === null) {
-         console.log(`[${dateString}] [${roundedElapsedTime}s] [MAIN] ${text}`);
+         console.log(`[${dateString}] [${roundedElapsedTime}s] [MAIN] ${text}`, log);
       }
       else {
-         console.log(`[${dateString}] [${roundedElapsedTime}s] [${account.username}] ${text}`);
+         console.log(`[${dateString}] [${roundedElapsedTime}s] [${account.username}] ${text}`, log);
       }
    } 
    else {
-      console.log(`[${dateString}] [${roundedElapsedTime}s] [MAIN]`);
+      console.log(`[${dateString}] [${roundedElapsedTime}s] [MAIN]`, log);
    }
    return endTime;
 }

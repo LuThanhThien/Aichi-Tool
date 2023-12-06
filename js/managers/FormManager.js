@@ -289,15 +289,15 @@ async function checkAvailability(page, account, form, i) {
 
    // console.log(avaiStatus)
    if (avaiStatus === upcomingStatus) {
-      startTime = logger.logging(startTime, account, `Form [${i+1}] is upcoming, start at: ${form.startDate}`)
+      startTime = logger.logging(startTime, account, `Form [${i+1}] is upcoming, start at: ${form.startDate}`, false)
       return 'upcoming'
    }
    else if (avaiStatus === passedStatus) {
-      startTime = logger.logging(startTime, account, `Form [${i+1}] is out of date, started at: ${form.startDate}`)
+      startTime = logger.logging(startTime, account, `Form [${i+1}] is out of date, started at: ${form.startDate}`, false)
       return 'passed'
    }
    else if (avaiStatus === null) {
-      startTime = logger.logging(startTime, account, `Form [${i+1}] is available now, started at: ${form.startDate}`)
+      startTime = logger.logging(startTime, account, `Form [${i+1}] is available now, started at: ${form.startDate}`, false)
       return 'available'
    }
 }

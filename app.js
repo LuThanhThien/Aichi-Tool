@@ -76,7 +76,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
             await thisPage.reload()
          }))
       }
-
+      
       let filledForms = formManager.importJSON(config.accountJSONPath) || {}   // store filled forms
       // AUTO FILL FORMS
       failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test)
