@@ -101,7 +101,7 @@ async function finder(page, account, keyword=config.filterKeyword) {
       // const upcomingStatus = "近日受付開始"
       const passedStatus = "受付終了しました"
       const endedStatus = "終了しました"
-      availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
+      // availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
       availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
       // availableItem = availableItem.filter(item => item.isPast === false)                 // ignore passed forms
       

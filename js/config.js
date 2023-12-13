@@ -25,8 +25,8 @@ let DateCombined = {
 const testAccounts = ['luthien5921@gmail.com', 'giathanh010101@gmail.com', 'piechipiechipeach@gmail.com', 'piechipiechipeach@gmail.com', 'piechipeach@gmail.com', 'nqkhanhtoan@gmail.com']
 const accounts = [
    // TEST
-   { username: 'luthien5921@gmail.com', password: 'aichi@5921' },       
-   { username: 'giathanh010101@gmail.com', password: 'aichi@5921'},   
+   // { username: 'luthien5921@gmail.com', password: 'aichi@5921' },       
+   // { username: 'giathanh010101@gmail.com', password: 'aichi@5921'},   
    // { username: 'piechipiechipeach@gmail.com', password: 'aichi@5921'},     
    // { username: 'piechipeach@gmail.com', password: 'aichi@5921'},     
    // { username: 'nqkhanhtoan@gmail.com', password: 'aichi@5921'},     
@@ -43,8 +43,8 @@ const accounts = [
    // { username: 'truongbui0425@gmail.com', password: 'hoahong1234' },
    // { username: 'tanvuongvo76@gmail.com', password: 'hoahong1234' },
    // TOSAN main
-   // { username: 'benhosong@gmail.com', password: 'hoahong1234' },
-   // { username: 'dieptram78@gmail.com', password: 'hoahong1234' },
+   { username: 'benhosong@gmail.com', password: 'hoahong1234' },
+   { username: 'dieptram78@gmail.com', password: 'hoahong1234' },
    // { username: 'davidalaba00000@gmail.com', password: 'hoahong1234' },
    // { username: 'ble79037@gmail.com', password: 'hoahong1234' },
    // { username: 'benemmai380@gmail.com', password: 'hoahong1234' },
@@ -57,6 +57,7 @@ const accounts = [
 // FORM MANAGER
 const filterKeyword = 'Tosan'
 const displayNumber = 50
+const mainPhoneNumberHash = "080-1583-0891"
 const infoFake = {
    lastName: ['Nguyen', 'Tran', 'Le', 'Vo', 'Pham', 'Hoang', 'Huynh', 'Phan', 'Vu', 'Dang'],
    firstName: ['Thuan Thien', 'Le Ly', 'Hong Thi', 'Khanh Van', 'Thuy Duong', 'Hoai Nam', 'Phuong Thao', 'Hoan Nhung', 'Nhat Tan', 'Thi Thanh', 'Thanh Thao', 'Thanh Nguyen'],
@@ -87,7 +88,7 @@ module.exports = {
    mainUrl, logInUrl, inqueryUrl, detailBaseUrl,
    accounts, testAccounts,
    DateCombined, DateComponents,
-   filterKeyword, displayNumber,
+   filterKeyword, displayNumber, mainPhoneNumberHash,
    infoFake, customerData, infoCol, 
    formJSONPath, accountJSONPath,
 }

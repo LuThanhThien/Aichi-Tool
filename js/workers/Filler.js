@@ -15,11 +15,12 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
       const thisAccount = loggedPage.account
       const thisPage = loggedPage.page
       const thisInfo = loggedPage.info
-      if (thisAccount.username in filledForms == false) {
+      try
+      {if (thisAccount.username in filledForms == false) {
          filledForms[thisAccount.username] = []
       }
-      if (filledForms[thisAccount.username].length >= 3) {
-         // startTimeInner = logger.logging(startTimeInner, thisAccount, `This account has reach max forms - END`)
+      if (filledForms[thisAccount.username].length >= 3 && test == true) {
+         startTimeInner = logger.logging(startTimeInner, thisAccount, `This account has reach max forms - END`, false)
          return
       }
       
@@ -57,7 +58,11 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
          await newPage.close()
          n++
       }
-      startTimeInner = logger.logging(startTimeInner, thisAccount, "Account finished - END")
+      startTimeInner = logger.logging(startTimeInner, thisAccount, "Account finished - END")}
+      catch (err) {
+         startTimeInner = logger.logging(startTimeInner, thisAccount, "ERROR: Account finished - END")
+         console.log(err)
+      }
    }))
 
    return failStore, totalSuccess, filledForms 

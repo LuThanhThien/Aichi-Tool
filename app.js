@@ -14,29 +14,12 @@ const Accountor = require('./js/workers/Accountor')
 const Distributor = require('./js/workers/Distributor')
 const Taker = require('./js/workers/Taker');
 const Filler = require('./js/workers/Filler');
+const { log } = require('console');
 
 // init logger
 logger.logger()
 
 // tool
-async function FINDER(keyword='Hirabari') {
-   try {
-      const isHeadless = 'new'                         // headless mode
-      let { listForms, formBrowser, formPage } = await Finder(keyword, isHeadless)
-      maxLoop = -1                                        // infinite loop
-      while (maxLoop > 0 || maxLoop === -1) {
-         let listForms = await formManager.collector(formPage, keyword, config.displayNumber, false)     // find valid forms
-         formManager.exportJSON(listForms)        
-         if (maxLoop > 0) { maxLoop-- }
-      }
-   }
-   catch (err) {
-      logger.logging(0, null, `FINDER ERROR: ${err}`)
-      console.log(err)
-   }      
-}
-
-
 async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=10000) {
    const accounts = config.accounts                                  // list of accounts
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
@@ -65,8 +48,13 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
          disPages 
       ] = await Promise.all([
          formManager.finder(formPage, null, keyword),
-         Distributor(loggedPages, accounts, maxForms)
+         Distributor(loggedPages, accounts, keyword, maxForms)
       ])
+
+      for (dispage of disPages) {
+         console.log(dispage.info)
+      }
+      return 
 
       // REALOAD DISPAGES
       if (reRun % 20 === 0) {
