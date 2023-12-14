@@ -11,7 +11,6 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
    let totalSuccess = 0                                              // total successful forms
    await Promise.all(disPages.map(async (loggedPage, pageIndex) => {
       // params 
-      let startTimeInner = logger.logging(0)
       const thisAccount = loggedPage.account
       const thisPage = loggedPage.page
       const thisInfo = loggedPage.info
@@ -20,7 +19,7 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
          filledForms[thisAccount.username] = []
       }
       if (filledForms[thisAccount.username].length >= 3 && test == true) {
-         startTimeInner = logger.logging(startTimeInner, thisAccount, `This account has reach max forms - END`, false)
+         logger.logging(thisAccount, `This account has reach max forms - END`, false)
          return
       }
       
@@ -37,15 +36,15 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
       while (totalForms > 0 && n < listForms.length) {
          const thisForm = listForms[n]
          if (filledForms[thisAccount.username].includes(thisForm.title)) {
-            startTimeInner = logger.logging(startTimeInner, thisAccount, `Auto fill form [${n+1}] skipped: ${thisForm.title}`)
+            logger.logging(thisAccount, `Auto fill form [${n+1}] skipped: ${thisForm.title}`)
             n++
             continue
          }
-         startTimeInner = logger.logging(startTimeInner, thisAccount, `Auto fill form [${n+1}] begin: ${thisForm.title}`)
+         logger.logging(thisAccount, `Auto fill form [${n+1}] begin: ${thisForm.title}`)
          const newPage = await thisPage.browser().newPage()
          await newPage.goto(thisForm.link)
          let isFail = await formManager.filler(newPage, thisAccount, thisForm, n+1, capture, test, thisInfo[totalForms-1])
-         startTimeInner = logger.logging(startTimeInner, thisAccount, `Auto fill form [${n+1}] finished - ${isFail ? 'FAILED' : 'SUCCESS'}`)        
+         logger.logging(thisAccount, `Auto fill form [${n+1}] finished - ${isFail ? 'FAILED' : 'SUCCESS'}`)        
          if (isFail) {
             const fail = {account: thisAccount.username, number: n+1, title: thisForm.title}
             failStore.push(fail)
@@ -58,9 +57,9 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
          await newPage.close()
          n++
       }
-      startTimeInner = logger.logging(startTimeInner, thisAccount, "Account finished - END")}
+      logger.logging(thisAccount, "Account finished - END")}
       catch (err) {
-         startTimeInner = logger.logging(startTimeInner, thisAccount, "ERROR: Account finished - END")
+         logger.logging(thisAccount, "ERROR: Account finished - END")
          console.log(err)
       }
    }))

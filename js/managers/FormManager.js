@@ -8,7 +8,6 @@ const { link } = require('fs');
 const { log } = require('console');
 
 async function filter(page, account, keyword=config.filterKeyword) {
-   let startTime = logger.logging(0)
 
    try {
       if (page.url !== config.mainUrl) { await page.goto(config.mainUrl) }   // redirect to main page
@@ -20,22 +19,21 @@ async function filter(page, account, keyword=config.filterKeyword) {
       await page.keyboard.press('Enter')                                      // press enter to filter
       await page.waitForNavigation()
 
-      statTime = logger.logging(startTime, account, "Filter finished")
+      logger.logging(account, "Filter finished")
    }
    catch (err) {
-      startTime = logger.logging(startTime, account, `ERROR: Cannot filter - SKIP`)
+      logger.logging(account, `ERROR: Cannot filter - SKIP`)
       console.log(err)
       return false
    }
 }
 
 async function display(page, account, displayNumber=config.displayNumber) {
-   let startTime = logger.logging(0)
    try {
-      let availables = [10, 20,50]
+      let availables = [120,50]
       if (!availables.includes(displayNumber)) 
       {
-         startTime = logger.logging(startTime, account, `ERROR: ${displayNumber} is not in availables - SKIP`)
+         logger.logging(account, `ERROR: ${displayNumber} is not in availables - SKIP`)
          return false
       }
       // const displaySelectBoxHTML = "top_ken_selectbox"
@@ -43,17 +41,16 @@ async function display(page, account, displayNumber=config.displayNumber) {
       await page.goto(dispUrl);                                             // display n forms
    }
    catch (err) {
-      startTime = logger.logging(startTime, account, `ERROR: Cannot display ${displayNumber} forms - SKIP`)
+      logger.logging(account, `ERROR: Cannot display ${displayNumber} forms - SKIP`)
       console.log(err)
       return false
    }
-   statTime = logger.logging(startTime, account, `Display ${displayNumber} forms finished`)
+   logger.logging(account, `Display ${displayNumber} forms finished`)
    return true
 }
 
 
 async function finder(page, account, keyword=config.filterKeyword) {
-   let startTime = logger.logging(0)
    try {
       const selectors = {
          listItems: '.c-box--cardList__item',
@@ -97,13 +94,15 @@ async function finder(page, account, keyword=config.filterKeyword) {
       if (keyword != null && keyword != '') {
          availableItem = availableItem.filter(item => item.title.includes(keyword))    // deep-filter with exact keyword
       }
+
+      availableItem = availableItem.sort(customSort)                                      // sort by date
   
       // const upcomingStatus = "近日受付開始"
-      const passedStatus = "受付終了しました"
+      const passedStatus = "受付終了しました" 
       const endedStatus = "終了しました"
-      // availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
+      availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
       availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
-      // availableItem = availableItem.filter(item => item.isPast === false)                 // ignore passed forms
+      // availableItem = availableItem.filter(item => item.isPast x=== false)                 // ignore passed forms
       
       let closest = Infinity
       for (item in availableItem) {
@@ -112,14 +111,14 @@ async function finder(page, account, keyword=config.filterKeyword) {
          if (availableItem[item].distance < closest && availableItem[item].distance >= 0) {
             closest = availableItem[item].distance
          }
-      }
+      } 
 
       availableItem = availableItem.filter(item => item.distance <= closest)               // take the closest form
-      startTime = logger.logging(startTime, account, "Find available finished. Total links found: " + availableItem.length)
+      logger.logging(account, "Find available finished. Total links found: " + availableItem.length)
       return availableItem
    }
    catch (err) {
-      startTime = logger.logging(startTime, account, `ERROR: Cannot find available forms - SKIP`)
+      logger.logging(account, `ERROR: Cannot find available forms - SKIP`)
       console.log(err)
       return []
    }
@@ -154,18 +153,17 @@ function distributor(listForms, accounts, maxForms=3) {
 
 async function collector(page, keyword=config.filterKeyword, displayNumber=config.displayNumber) {
    // get available forms in advance
-   let startTime = logger.logging(0)
    await filter(page, null, keyword, )                                        // filter 
    await display(page, null, displayNumber)                                   // display  
 
    let listForms = await finder(page, null, keyword)                          // find all availables
-   startTime = logger.logging(startTime, null, "Collecting forms finished")
+   logger.logging(null, "Collecting forms finished")
    return listForms
 }
 
 
 async function filler(newPage, account, form, i, capture=false, test=false, info) {   
-   let startTime = logger.logging(0)  
+   const beginUrl = newPage.url()
    const logPath = `${logger.logPath}/${account.username}` // path to save log
    const maxRetry = 0
    let retry = 0
@@ -180,7 +178,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       if (isAvailable === 'passed') { return false }
       else if (isAvailable === 'available') { break }
       else if (retry >= maxRetry && maxRetry != 0) {
-         startTime = logger.logging(startTime, account, `Exceed max retry form [${i+1}]`)
+         logger.logging(account, `Exceed max retry form [${i+1}]`)
          return false
       }
       retry++
@@ -197,13 +195,16 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       await newPage.waitForNavigation()
    }
    catch (err) {
-      startTime = logger.logging(startTime, account, `ERROR FORM [${i+1}]: Agree button not found`)
+      logger.logging(account, `ERROR FORM [${i+1}]: Agree button not found`)
       console.log(err)
+      return false
+   }
+   if (newPage.url() === beginUrl) {
+      logger.logging(account, `ERROR FORM [${i+1}]: Agree button not found`)
       return false
    }
 
    // 2. fill form and click agree, go to confirm page
-   const formUrl = newPage.url()
    let fakeInfo = {
       phoneNumber: config.infoFake.phoneNumber[Math.random() * config.infoFake.phoneNumber.length | 0],
       schoolName: config.infoFake.schoolName[Math.random() * config.infoFake.schoolName.length | 0],
@@ -242,12 +243,12 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       await newPage.waitForNavigation()
    }
    catch (err) {
-      startTime = logger.logging(startTime, account, `ERROR FORM [${i+1}]: Form not found or data not valid`)
+      logger.logging(account, `ERROR FORM [${i+1}]: Form not found or data not valid`)
       console.log(err)
       return false
    }
-   if (newPage.url() === formUrl) {
-      startTime = logger.logging(startTime, account, `ERROR FORM [${i+1}]: Form not found or data not valid`)
+   if (newPage.url() === config.formUrl) {
+      logger.logging(account, `ERROR FORM [${i+1}]: Form not found or data not valid`)
       return false
    }
 
@@ -265,21 +266,23 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       if (capture) {await newPage.screenshot({path: `${logPath}/form-[${i+1}]-end.png`, fullPage: true})}
    }
    catch (err) {
-      startTime = logger.logging(startTime, account, `ERROR FORM [${i+1}]: Confirm button not found`)
+      logger.logging(account, `ERROR FORM [${i+1}]: Confirm button not found`)
       console.log(err)
+      return false
+   }
+   if (newPage.url() === config.confirmUrl) {
+      logger.logging(account, `ERROR FORM [${i+1}]: Confirm button not found`)
       return false
    }
 
    // 4. check if success or fail
-   const isFail = await newPage.evaluate(() => {
+   return await newPage.evaluate(() => {
          return !!document.querySelector('.errorMessage') // !! converts anything to boolean
        })
-   return isFail
 }
 
 
 async function checkAvailability(page, account, form, i) {
-   let startTime = logger.logging(0)
    const passedStatus = "大変申し訳ございません。申込数が上限に達した為、締め切らせていただきました。"
    const upcomingStatus = "申込期間ではありません。"
    let avaiStatus = await page.evaluate(() => {
@@ -289,15 +292,15 @@ async function checkAvailability(page, account, form, i) {
 
    // console.log(avaiStatus)
    if (avaiStatus === upcomingStatus) {
-      startTime = logger.logging(startTime, account, `Form [${i+1}] is upcoming, start at: ${form.startDate}`, false)
+      logger.logging(account, `Form [${i+1}] is upcoming, start at: ${form.startDate}`, false)
       return 'upcoming'
    }
    else if (avaiStatus === passedStatus) {
-      startTime = logger.logging(startTime, account, `Form [${i+1}] is out of date, started at: ${form.startDate}`, false)
+      logger.logging(account, `Form [${i+1}] is out of date, started at: ${form.startDate}`, false)
       return 'passed'
    }
    else if (avaiStatus === null) {
-      startTime = logger.logging(startTime, account, `Form [${i+1}] is available now, started at: ${form.startDate}`, false)
+      logger.logging(account, `Form [${i+1}] is available now, started at: ${form.startDate}`, false)
       return 'available'
    }
 }
@@ -345,22 +348,22 @@ function exportJSON(disForms, path=config.formJSONPath) {
    let json = JSON.stringify(disForms, null, 2); // The third argument (2) is for indentation
    fs.writeFile(path, json, 'utf8', (err) => {
       if (err) {
-         logger.logging(0, null, "ERROR: Cannot write JSON data to " + path)
+         logger.logging(null, "ERROR: Cannot write JSON data to " + path)
          console.log(err)
       }
    })
-   // logger.logging(0, null, "JSON data has been written to " + path)
+   // logger.logging(null, "JSON data has been written to " + path)
 }
 
 function importJSON(path=config.formJSONPath) {
    try {
       const jsonString = fs.readFileSync(path, 'utf8')
       const jsonObject = JSON.parse(jsonString)
-      // logger.logging(0, null, 'Received JSON file successfully')
+      // logger.logging(null, 'Received JSON file successfully')
       return jsonObject
    }
    catch(err) {
-      logger.logging(0, null, 'ERROR: Cannot read JSON file or JSON file is empty')
+      logger.logging(null, 'ERROR: Cannot read JSON file or JSON file is empty')
       console.log(err)
       return {}
    }
@@ -376,19 +379,27 @@ function checkJSON(newJSONObj, path=config.formJSONPath) {
          delete newJSONObj[i].distance
       }
       if (JSON.stringify(oldJSONObj) === JSON.stringify(newJSONObj)) {
-         logger.logging(0, null, 'JSON Objects are the same')
+         logger.logging(null, 'JSON Objects are the same')
          return true
       }
       else {
-         logger.logging(0, null, 'JSON Objects are different')
+         logger.logging(null, 'JSON Objects are different')
          return false
       }
    }
    catch(err) {
-      logger.logging(0, null, 'ERROR: Cannot check JSON Objects')
+      logger.logging(null, 'ERROR: Cannot check JSON Objects')
       console.log(err)
       return false
    }
+}
+
+// Define a custom sorting function
+function customSort(a, b) {
+   const dateA = parseInt(a.title.replace(/[^\d]/g, ''), 10); // Extract numeric part of date
+   const dateB = parseInt(b.title.replace(/[^\d]/g, ''), 10);
+
+   return dateA - dateB;
 }
 
 module.exports = {

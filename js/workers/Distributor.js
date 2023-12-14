@@ -30,7 +30,6 @@ function getRandomPhoneNumbers(mainPhoneNumber, phoneNumberArray, prob=0.4) {
 }
 
 async function distribute(loggedPages, accounts, keyword, maxForms=3) {
-   let startTimeAll = logger.logging(0)
    let prob = 0.4
    if (keyword === 'Tosan') { prob = 0 }
    let disPages = []                            // store distributed pages
@@ -51,7 +50,7 @@ async function distribute(loggedPages, accounts, keyword, maxForms=3) {
          disPages[j].info.push(info)
       }
    }
-   // startTimeAll = logger.logging(startTimeAll, null, `Distributed ${disPages.length} pages to accounts`)
+   // logger.logging(null, `Distributed ${disPages.length} pages to accounts`)
    return disPages
 }
 

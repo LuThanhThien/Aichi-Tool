@@ -25,7 +25,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
-   let startTimeAll = logger.logging(0, null, 
+   logger.logging(null, 
       `ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
@@ -51,14 +51,10 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
          Distributor(loggedPages, accounts, keyword, maxForms)
       ])
 
-      for (dispage of disPages) {
-         console.log(dispage.info)
-      }
-      return 
 
       // REALOAD DISPAGES
       if (reRun % 20 === 0) {
-         startTimeAll = logger.logging(startTimeAll, loggedPages.account, `RELOAD ACCOUNT PAGES`)
+         logger.logging(loggedPages.account, `RELOAD ACCOUNT PAGES`)
          await Promise.all(disPages.map(async (loggedPages, pageIndex) => {
             const thisPage = loggedPages.page
             await thisPage.reload()
@@ -109,7 +105,7 @@ if (options.drop === true) {
 }
 
 // node app --drop
-// node app --tool --keyword='GY' --capture 
-// node app --tool --keyword='Hirabari' --capture 
-// node app --tool --keyword='Tosan' --capture 
+// node app --tool --keyword='GY' --capture
+// node app --tool --keyword='Hirabari' --capture
+// node app --tool --keyword='Tosan' --capture
 

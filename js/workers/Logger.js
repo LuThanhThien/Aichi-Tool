@@ -23,27 +23,21 @@ function logger() {
 }
 
 // for logging info
-function logging(startTime, account=null, text=null, log=true) {
-   if (startTime === 0 && text === null && account === null) {
-      return 0;
-   }
-   const endTime = performance.now();
-   const elapsedTime = (endTime - startTime) / 1000;
-   const roundedElapsedTime = elapsedTime.toFixed(2); // Round up to 4 decimal places
-   const dateString = `${config.DateComponents.year}-${config.DateComponents.month}-${config.DateComponents.date} ${config.DateComponents.hours}:${config.DateComponents.minutes}:${config.DateComponents.seconds}`;
+function logging(account=null, text=null, log=true) {
+   const now = new Date();
+   let dateString = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
 
    if (text !== null) {
       if (account === null) {
-         console.log(`[${dateString}] [${roundedElapsedTime}s] [MAIN] ${text}`, log);
+         console.log(`[${dateString}] [MAIN] ${text}`, log);
       }
       else {
-         console.log(`[${dateString}] [${roundedElapsedTime}s] [${account.username}] ${text}`, log);
+         console.log(`[${dateString}] [${account.username}] ${text}`, log);
       }
    } 
    else {
-      console.log(`[${dateString}] [${roundedElapsedTime}s] [MAIN]`, log);
+      console.log(`[${dateString}] [MAIN]`, log);
    }
-   return endTime;
 }
 
 function cleanLog(n) {
