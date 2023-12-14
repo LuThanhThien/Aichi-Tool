@@ -94,14 +94,18 @@ async function finder(page, account, keyword=config.filterKeyword) {
       if (keyword != null && keyword != '') {
          availableItem = availableItem.filter(item => item.title.includes(keyword))    // deep-filter with exact keyword
       }
-
+      
       availableItem = availableItem.sort(customSort)                                      // sort by date
-  
+      if (keyword === "Hirabari") { // using for hidden Hiraibari forms
+         availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
+      }
+
       // const upcomingStatus = "近日受付開始"
       const passedStatus = "受付終了しました" 
       const endedStatus = "終了しました"
       availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
       availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
+      
       // availableItem = availableItem.filter(item => item.isPast x=== false)                 // ignore passed forms
       
       let closest = Infinity
