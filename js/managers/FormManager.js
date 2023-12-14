@@ -52,6 +52,8 @@ async function display(page, account, displayNumber=config.displayNumber) {
 
 async function finder(page, account, keyword=config.filterKeyword) {
    try {
+      await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
+      
       const selectors = {
          listItems: '.c-box--cardList__item',
          title: '.c-box--cardList__item_h4',
