@@ -1,13 +1,24 @@
 [
   {
-    "title": "＜12月19日(火) 13:30～14:45＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
-    "status": "もうすぐ終了",
-    "startDate": "2023年12月05日 07時30分",
-    "endDate": "2023年12月15日 12時00分",
-    "templateSeq": "86913",
-    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=86913&accessFrom=offerList",
+    "title": "＜12月21日(木) 08:45～09:30＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": null,
+    "startDate": "2023年12月07日 07時30分",
+    "endDate": "2023年12月19日 12時00分",
+    "templateSeq": "86921",
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=86921&accessFrom=offerList",
     "isAvailable": true,
     "isPast": true,
-    "distance": -862537000
+    "distance": -691020000
+  },
+  {
+    "title": "＜12月21日(木) 13:30～14:45＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": null,
+    "startDate": "2023年12月07日 07時30分",
+    "endDate": "2023年12月19日 12時00分",
+    "templateSeq": "86926",
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=86926&accessFrom=offerList",
+    "isAvailable": true,
+    "isPast": true,
+    "distance": -691020000
   }
 ]

@@ -53,7 +53,7 @@ async function display(page, account, displayNumber=config.displayNumber) {
 async function finder(page, account, keyword=config.filterKeyword) {
    try {
       await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
-      
+
       const selectors = {
          listItems: '.c-box--cardList__item',
          title: '.c-box--cardList__item_h4',
@@ -100,8 +100,9 @@ async function finder(page, account, keyword=config.filterKeyword) {
       availableItem = availableItem.sort(customSort)                                      // sort by date
       if (keyword === "Hirabari") { // using for hidden Hiraibari forms
          availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
+         availableItem = availableItem.filter(item => !item.title.includes('<'))
       }
-
+      // const aboutToClose = "もうすぐ終了"
       // const upcomingStatus = "近日受付開始"
       const passedStatus = "受付終了しました" 
       const endedStatus = "終了しました"
@@ -282,6 +283,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
    }
 
    // 4. check if success or fail
+   await utils.captureHTML(newPage, `${logPath}/form-[${i+1}]-result.mhtml`)
    return await newPage.evaluate(() => {
          return !!document.querySelector('.errorMessage') // !! converts anything to boolean
        })
