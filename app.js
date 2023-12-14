@@ -33,7 +33,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
       { listForms, formBrowser, formPage },
       loggedPages 
    ] = await Promise.all([
-      Finder(keyword, 'new'),                // find all available forms
+      Finder(keyword, false),                // find all available forms
       Accountor(accounts, isHeadless)        // login all accounts
    ])                 
    
