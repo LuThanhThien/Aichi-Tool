@@ -54,7 +54,4 @@ async function distribute(loggedPages, accounts, keyword, maxForms=3) {
    return disPages
 }
 
-module.exports = async function(loggedPages, accounts, keyword, maxForms=3) {
-   let disPages = distribute(loggedPages, accounts, keyword, maxForms)
-   return disPages
-}
+module.exports = distribute

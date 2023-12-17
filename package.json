@@ -2,13 +2,14 @@
   "name": "aichi",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node node_modules/puppeteer/install.mjs"
+    "postinstall": "node node_modules/puppeteer/install.mjs",
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "bluebird": "^3.7.2",
     "commander": "^11.1.0",
     "csv-load-sync": "^2.3.1",
+    "pkg": "^5.8.1",
     "puppeteer": "^21.5.2"
   }
 }

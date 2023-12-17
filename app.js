@@ -1,6 +1,7 @@
 require('events').EventEmitter.defaultMaxListeners = 20
 const { program } = require('commander');
 const config = require('./js/config')
+const utils = require('./js/utils')
 
 // objects
 const formEliminator = require('./js/managers/FormInquery')
@@ -31,7 +32,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
       { listForms, formBrowser, formPage },
-      loggedPages 
+      loggedPages
    ] = await Promise.all([
       Finder(keyword, 'new'),                // find all available forms
       Accountor(accounts, isHeadless)        // login all accounts
@@ -47,8 +48,8 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
          listForms,
          disPages 
       ] = await Promise.all([
-         formManager.finder(formPage, null, keyword),
-         Distributor(loggedPages, accounts, keyword, maxForms)
+         formManager.finder(formPage, null, keyword),             // re-find all available forms
+         Distributor(loggedPages, accounts, keyword, maxForms)    // distribute forms to accounts
       ])
 
 
@@ -57,7 +58,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
          logger.logging(loggedPages.account, `RELOAD ACCOUNT PAGES`)
          await Promise.all(disPages.map(async (loggedPages, pageIndex) => {
             const thisPage = loggedPages.page
-            await thisPage.reload()
+            let isReloadAccountPage = await utils.reloadPage(thisPage)
          }))
       }
       
@@ -85,6 +86,15 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
 }
 
 
+async function main() {
+   const keyword = "Tosan"
+   const headless = false
+   const capture = true
+   const maxRenit = 0
+   tool(keyword, headless, capture, maxRenit)
+}
+
+
 program
    .option('--drop')
    .option('--tool')
@@ -99,10 +109,17 @@ const options = program.opts();
 if (options.tool === true) {
    tool(options.keyword, options.headless, options.capture, options.maxRenit)
 }
-if (options.drop === true) {
+else if (options.drop === true) {
    // console.log('Cannot perform this action in this version')
    formEliminator.droper(options.capture)
 }
+else {
+   main()
+}
+
+
+
+
 
 // node app --drop
 // node app --tool --keyword='GY' --capture

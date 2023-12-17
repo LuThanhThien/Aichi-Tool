@@ -42,7 +42,7 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
          }
          logger.logging(thisAccount, `Auto fill form [${n+1}] begin: ${thisForm.title}`)
          const newPage = await thisPage.browser().newPage()
-         await newPage.goto(thisForm.link)
+         let isNavigatedToForm = await utils.navigateTo(newPage, thisForm.link)
          let isFail = await formManager.filler(newPage, thisAccount, thisForm, n+1, capture, test, thisInfo[totalForms-1])
          logger.logging(thisAccount, `Auto fill form [${n+1}] finished - ${isFail ? 'FAILED' : 'SUCCESS'}`)        
          if (isFail) {

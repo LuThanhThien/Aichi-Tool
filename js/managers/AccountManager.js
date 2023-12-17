@@ -7,23 +7,8 @@ const formManager = require('./FormManager')
 
 async function logIn(page, account, depth=0, maxDepth=10) {
    // This function is used to log in to the account 
-   let startTime = logger.logging(0)
    // navigate to login page
-   try {
-      await page.goto(config.logInUrl)
-   }
-   catch (err) {
-      // retry to login for maxDepth time, maxDepth = 0 means infinite
-      startTime = logger.logging(startTime, account, `ERROR: Cannot navigate to login page, retry time <${depth}>...`)
-      if (depth < maxDepth || maxDepth == 0) {
-         return await logIn(page, account, depth+1)
-      }
-      else {
-         logger.logging(startTime, account, `ERROR: Cannot navigate to login page`)      
-         return false
-      }
-   }
-   startTime = logger.logging(startTime, account, `Navigate to login page finished`)
+   let isNavigated = await utils.navigateTo(page, config.logInUrl)
    
    // login
    const usernameInputHTML = "input[name='userId']"
@@ -38,12 +23,12 @@ async function logIn(page, account, depth=0, maxDepth=10) {
    }
    catch (err) {
       // retry to login for maxDepth time, maxDepth = 0 means infinite
-      startTime = logger.logging(startTime, account, `ERROR: Cannot login, retry time <${depth}>...`)
+      logger.logging(account, `ERROR: Cannot login, retry time <${depth}>...`)
       if (depth < maxDepth || maxDepth == 0) {
          return await logIn(page, account, depth+1)
       }
       else {
-         logger.logging(startTime, account, `ERROR: Cannot login`)      
+         logger.logging(account, `ERROR: Cannot login`)      
          return false
       }
    }
@@ -54,7 +39,6 @@ async function logIn(page, account, depth=0, maxDepth=10) {
 
 async function accountFormsInquery(page, account) {
    // This function is used to find all forms in the account
-   let startTime = logger.logging(0)
    // navigate to inquery page
    try {
       await page.goto(config.inqueryUrl)
@@ -62,7 +46,7 @@ async function accountFormsInquery(page, account) {
       console.log(listItems)
    }
    catch (err) {
-      startTime = logger.logging(startTime, account, `ERROR: Cannot navigate to inquery page`)
+      logger.logging(account, `ERROR: Cannot navigate to inquery page`)
       return false
    }
 
@@ -70,7 +54,7 @@ async function accountFormsInquery(page, account) {
    const formListHTML = "div[class='formList']"
    const formList = await page.$$(formListHTML)
    const formListLength = formList.length
-   startTime = logger.logging(startTime, account, `Found ${formListLength} forms`)
+   logger.logging(account, `Found ${formListLength} forms`)
    return formList
 }
 

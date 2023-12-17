@@ -1,9 +1,21 @@
 var util = require('util');
 const fs = require('fs');
 const config = require('../config');
-const utils = require('../utils');
 const path = require('path');
 const logPath = `./log/${config.DateCombined.thisDate}`;
+
+
+function makeDir(path) {
+   if (!fs.existsSync(path)) {
+      fs.mkdirSync(path, { recursive: true }, (err) => {
+         if (err) {
+            console.log(err)
+         } else {
+            console.log(`Folder '${path}' created successfully.`)
+         }
+      })
+   }   
+}
 
 // create logger
 function logger() {
@@ -66,11 +78,11 @@ function cleanLog(n) {
 
 // make dirs for log
 function initLogger(){
-   utils.makeDir(logPath)
+   makeDir(logPath)
    cleanLog(10)
    // make dir for each account to capture html or screenshot
    for (acc of config.accounts) {
-      utils.makeDir(logPath + `/${acc.username}`)
+      makeDir(logPath + `/${acc.username}`)
    }
 }
 
@@ -79,6 +91,7 @@ module.exports = {
    logger,
    logging,
    logPath,
+   makeDir,
 }
 // console.log(`[${dateString}] [MAIN] [START]`)
 

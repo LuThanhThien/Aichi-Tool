@@ -28,7 +28,7 @@ const testAccounts = ['luthien5921@gmail.com', 'giathanh010101@gmail.com', 'piec
 const accounts = [
    // TEST
    { username: 'luthien5921@gmail.com', password: 'aichi@5921' },       
-   { username: 'giathanh010101@gmail.com', password: 'aichi@5921'},   
+   // { username: 'giathanh010101@gmail.com', password: 'aichi@5921'},   
    // { username: 'piechipiechipeach@gmail.com', password: 'aichi@5921'},     
    // { username: 'piechipeach@gmail.com', password: 'aichi@5921'},     
    // { username: 'nqkhanhtoan@gmail.com', password: 'aichi@5921'},     

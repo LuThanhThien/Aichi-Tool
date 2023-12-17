@@ -1,5 +1,6 @@
 const config = require('./config')
 const fs = require('fs')
+const logger = require('./workers/Logger')
 
 // redirect to main page
 async function redirectMain(page) {
@@ -7,17 +8,6 @@ async function redirectMain(page) {
    await page.waitForNavigation()
 }
 
-function makeDir(path) {
-   if (!fs.existsSync(path)) {
-      fs.mkdirSync(path, { recursive: true }, (err) => {
-         if (err) {
-            console.log(err)
-         } else {
-            console.log(`Folder '${path}' created successfully.`)
-         }
-      })
-   }   
-}
 
 async function captureHTML(page, name='page.mhtml') {  
    try {  
@@ -46,6 +36,42 @@ async function captureHTML(page, name='page.mhtml') {
    return targetDate
 }
 
+
+async function reloadPage(page, maxDepth=100) {
+   let retryCount = 0
+   while (retryCount < maxDepth || maxDepth == 0) {
+         try {
+            await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
+            logger.logging(null, `Reload page - SUCCESS`, false)
+            return true  // Exit the loop if reloading is successful
+         } catch (err) {
+            logger.logging(null, `ERROR: Cannot reload page - Retry ${retryCount + 1}/${maxDepth}`)
+            logger.logging(null, err)
+            retryCount++
+         }
+   }
+   logger.logging(null, `Max retries reached. Reload page - FAILED`)
+   return false
+}
+
+
+async function navigateTo(page, url, maxDepth=100) {
+   let retryCount = 0
+   while (retryCount < maxDepth || maxDepth == 0) {
+         try {
+            await page.goto(url)
+            logger.logging(null, `Navigate to ${url} - SUCCESS`, false)
+            return true  // Exit the loop if navigating is successful
+         } catch (err) {
+            logger.logging(null, `ERROR: Cannot navigate to ${url} - Retry ${retryCount + 1}/${maxDepth}`)
+            logger.logging(null, err)
+            retryCount++
+         }
+   }
+   logger.logging(null, `Max retries reached. Navigate to ${url} - FAILED`)
+   return false
+
+}
 
 function getJSTDateTime() {
    const currentDate = new Date()
@@ -84,9 +110,9 @@ function isPast(stringDate=null) {
 
 module.exports = {
    redirectMain,
-   makeDir,
    captureHTML,
    isPast,
+   reloadPage, navigateTo,
    stringToDate,
    getJSTDateTime,
  }
@@ -95,6 +121,6 @@ module.exports = {
 // const targetDate = '2023年12月07日 16時30分'
 // const result = stringToDate(targetDate)
 // const isPat = isPast(targetDate)
-// console.log(isPat)
+// logger.logging(isPat)
  
-// logging(null, "START")
+// log(null, "START")

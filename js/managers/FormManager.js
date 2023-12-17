@@ -1,11 +1,11 @@
 // Description: This file contains the functions that are used to manage the forms.
-const puppeteer = require('puppeteer');
-const fs = require('fs');  
-const config = require('../config');
-const utils = require('../utils');
-const logger = require('../workers/Logger');
-const { link } = require('fs');
-const { log } = require('console');
+const puppeteer = require('puppeteer')
+const fs = require('fs')  
+const config = require('../config')
+const utils = require('../utils')
+const logger = require('../workers/Logger')
+const { link } = require('fs')
+const { log } = require('console')
 
 async function filter(page, account, keyword=config.filterKeyword) {
 
@@ -38,7 +38,7 @@ async function display(page, account, displayNumber=config.displayNumber) {
       }
       // const displaySelectBoxHTML = "top_ken_selectbox"
       const dispUrl = `https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_movePage?dispPage=${displayNumber}`
-      await page.goto(dispUrl);                                             // display n forms
+      await page.goto(dispUrl)                                             // display n forms
    }
    catch (err) {
       logger.logging(account, `ERROR: Cannot display ${displayNumber} forms - SKIP`)
@@ -51,9 +51,9 @@ async function display(page, account, displayNumber=config.displayNumber) {
 
 
 async function finder(page, account, keyword=config.filterKeyword) {
-   try {
-      await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
+   let isReload = await utils.reloadPage(page)
 
+   try {
       const selectors = {
          listItems: '.c-box--cardList__item',
          title: '.c-box--cardList__item_h4',
@@ -64,33 +64,33 @@ async function finder(page, account, keyword=config.filterKeyword) {
          link: 'a',
          linkPrefix: "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=",
          linkSuffix: "&accessFrom=offerList",
-     };
+     }
      
      
-   const array = await page.evaluate(async (selectors, isPast, stringToDate) => {
-      const isPastFnc = new Function(`return ${isPast}`)()
-      const stringToDateFnc = new Function(`return ${stringToDate}`)()
-      return Array.from(document.querySelectorAll(selectors.listItems), li => {
-            const getTextContent = (element) => element ? element.textContent.replace(/\s+/g, ' ').trim() : null;
-            const titleElement = li.querySelector(selectors.title);
-            const statusElement = li.querySelector(selectors.status);
-            const startDateElement = li.querySelectorAll(selectors.startDate)[1];
-            const endDateElement = li.querySelectorAll(selectors.endDate)[3];
-            const templateSeqElement = li.querySelector(selectors.templateSeq);
-            const linkElement = li.querySelector(selectors.link);
-   
-            return {
-               title: getTextContent(titleElement),
-               status: getTextContent(statusElement),
-               startDate: getTextContent(startDateElement),
-               endDate: getTextContent(endDateElement),
-               templateSeq: templateSeqElement ? templateSeqElement.value : null,
-               link: selectors.linkPrefix + templateSeqElement.value + selectors.linkSuffix,
-               isAvailable: !!linkElement,
-               isPast: isPastFnc(getTextContent(startDateElement)),
-            };
-      });
-   }, selectors, utils.isPast.toString(), utils.stringToDate.toString());
+      const array = await page.evaluate(async (selectors, isPast, stringToDate) => {
+         const isPastFnc = new Function(`return ${isPast}`)()
+         const stringToDateFnc = new Function(`return ${stringToDate}`)()
+         return Array.from(document.querySelectorAll(selectors.listItems), li => {
+               const getTextContent = (element) => element ? element.textContent.replace(/\s+/g, ' ').trim() : null
+               const titleElement = li.querySelector(selectors.title)
+               const statusElement = li.querySelector(selectors.status)
+               const startDateElement = li.querySelectorAll(selectors.startDate)[1]
+               const endDateElement = li.querySelectorAll(selectors.endDate)[3]
+               const templateSeqElement = li.querySelector(selectors.templateSeq)
+               const linkElement = li.querySelector(selectors.link)
+      
+               return {
+                  title: getTextContent(titleElement),
+                  status: getTextContent(statusElement),
+                  startDate: getTextContent(startDateElement),
+                  endDate: getTextContent(endDateElement),
+                  templateSeq: templateSeqElement ? templateSeqElement.value : null,
+                  link: selectors.linkPrefix + templateSeqElement.value + selectors.linkSuffix,
+                  isAvailable: !!linkElement,
+                  isPast: isPastFnc(getTextContent(startDateElement)),
+               }
+         })
+      }, selectors, utils.isPast.toString(), utils.stringToDate.toString())
 
       let availableItem = array // take all forms                       
       if (keyword != null && keyword != '') {
@@ -135,13 +135,13 @@ async function finder(page, account, keyword=config.filterKeyword) {
 function distributor(listForms, accounts, maxForms=3) {
    // shuffle the listForms array and select the first 3 forms
    let disAccounts = []
-   for (let i = 0; i < accounts.length; i++) {
-      for (let i = listForms.length - 1; i > 0; i--) {
-         const j = Math.floor(Math.random() * (i + 1));
-         [listForms[i], listForms[j]] = [listForms[j], listForms[i]];
+   for (let i = 0 ; i < accounts.length ; i++) {
+      for (let i = listForms.length - 1 ; i > 0 ; i--) {
+         const j = Math.floor(Math.random() * (i + 1))
+         [listForms[i], listForms[j]] = [listForms[j], listForms[i]]
       }
       let numForms = 0
-      for (let j = 0; j < listForms.length; j++) {
+      for (let j = 0 ; j < listForms.length ; j++) {
          if (numForms >= maxForms) {
             break
          }
@@ -179,8 +179,8 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
    let isAvailable = await checkAvailability(newPage, account, form, i)
    if (isAvailable === 'passed') { return false }
    while (isAvailable === 'upcoming') {
-      // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });    // reload page
-      await newPage.reload();    // reload page
+      // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })    // reload page
+      let isReloadForm = await utils.reloadPage(newPage)    // reload page
       isAvailable = await checkAvailability(newPage, account, form, i)
       if (isAvailable === 'passed') { return false }
       else if (isAvailable === 'available') { break }
@@ -267,7 +267,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       })
       // handle the popup
       newPage.on('dialog', async dialog => {
-         await dialog.accept();
+         await dialog.accept()
       })
       await newPage.waitForNavigation()
       if (capture) {await newPage.screenshot({path: `${logPath}/form-[${i+1}]-end.png`, fullPage: true})}
@@ -294,8 +294,8 @@ async function checkAvailability(page, account, form, i) {
    const passedStatus = "大変申し訳ございません。申込数が上限に達した為、締め切らせていただきました。"
    const upcomingStatus = "申込期間ではありません。"
    let avaiStatus = await page.evaluate(() => {
-      const errorMessageElement = document.querySelector('.errorMessage');
-      return errorMessageElement ? errorMessageElement.textContent.trim() : null;
+      const errorMessageElement = document.querySelector('.errorMessage')
+      return errorMessageElement ? errorMessageElement.textContent.trim() : null
     })
 
    // console.log(avaiStatus)
@@ -316,27 +316,27 @@ async function checkAvailability(page, account, form, i) {
 async function findInqueryForms(page) {
    // find all inquery forms
    let listItems = await page.evaluate(config => {
-      let tableRows = document.querySelectorAll('table tbody tr'); // Select all table rows
-      let items = []; // Array to store the items
+      let tableRows = document.querySelectorAll('table tbody tr') // Select all table rows
+      let items = [] // Array to store the items
 
       tableRows.forEach((row, index) => {
          if(index !== 0) { // Skip the header row
-            let item = {};
-            let cells = row.querySelectorAll('td'); // Select all cells in the row
+            let item = {}
+            let cells = row.querySelectorAll('td') // Select all cells in the row
 
-            item.id = cells[0].textContent.trim();
-            item.name = cells[1].textContent.trim();
-            item.contact = cells[2].textContent.trim();
-            item.date = cells[3].textContent.trim();
-            item.status = cells[4].textContent.trim();
+            item.id = cells[0].textContent.trim()
+            item.name = cells[1].textContent.trim()
+            item.contact = cells[2].textContent.trim()
+            item.date = cells[3].textContent.trim()
+            item.status = cells[4].textContent.trim()
 
             // Get the onclick attribute of the button
-            let button = cells[5].querySelector('input[type="submit"]'); // Select the 'input' element in the last cell
+            let button = cells[5].querySelector('input[type="submit"]') // Select the 'input' element in the last cell
             if(button) {
-               item.buttonId = button.getAttribute('id');
+               item.buttonId = button.getAttribute('id')
             }
 
-            items.push(item); // Add the item to the array
+            items.push(item) // Add the item to the array
          }
       })
       return items
@@ -353,7 +353,7 @@ async function findInqueryForms(page) {
 
 // API for interact between workers
 function exportJSON(disForms, path=config.formJSONPath) {
-   let json = JSON.stringify(disForms, null, 2); // The third argument (2) is for indentation
+   let json = JSON.stringify(disForms, null, 2) // The third argument (2) is for indentation
    fs.writeFile(path, json, 'utf8', (err) => {
       if (err) {
          logger.logging(null, "ERROR: Cannot write JSON data to " + path)
@@ -380,10 +380,10 @@ function importJSON(path=config.formJSONPath) {
 function checkJSON(newJSONObj, path=config.formJSONPath) {
    try {
       const oldJSONObj = importJSON(path)
-      for (let i = 0; i < oldJSONObj.length; i++) {
+      for (let i = 0 ; i < oldJSONObj.length ; i++) {
          delete oldJSONObj[i].distance
       }
-      for (let i = 0; i < newJSONObj.length; i++) {
+      for (let i = 0 ; i < newJSONObj.length ; i++) {
          delete newJSONObj[i].distance
       }
       if (JSON.stringify(oldJSONObj) === JSON.stringify(newJSONObj)) {
@@ -404,10 +404,10 @@ function checkJSON(newJSONObj, path=config.formJSONPath) {
 
 // Define a custom sorting function
 function customSort(a, b) {
-   const dateA = parseInt(a.title.replace(/[^\d]/g, ''), 10); // Extract numeric part of date
-   const dateB = parseInt(b.title.replace(/[^\d]/g, ''), 10);
+   const dateA = parseInt(a.title.replace(/[^\d]/g, ''), 10) // Extract numeric part of date
+   const dateB = parseInt(b.title.replace(/[^\d]/g, ''), 10)
 
-   return dateA - dateB;
+   return dateA - dateB
 }
 
 module.exports = {

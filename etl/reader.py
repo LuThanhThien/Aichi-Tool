@@ -50,7 +50,7 @@ def read_create(txt_path, df, nation_df, country_df):
             # print("Customer gender: ", gender, "; Customer nation: ", nation)
          customer_line += 1
          if customer_line == 3:
-            df.loc[n, "phoneNumberHash"] = "070-2210-6809"
+            df.loc[n, "phoneNumberHash"] = "080-1583-0891"
             n += 1
             customer_line = 0
    return True if n > 0 else False
@@ -70,10 +70,10 @@ def customer_creator():
 
 if __name__ == "__main__":
    parser = argparse.ArgumentParser()
-   parser.add_argument("--customer", action="store_true", help="Path to customers.txt")
+   parser.add_argument("-r", "--read", action="store_true", help="Path to customers.txt")
    args = parser.parse_args()
 
-   if args.customer:
+   if args.read:
       print("Creating customer table...")
       n = customer_creator()
       print("Add " + str(n) + " customers.")
