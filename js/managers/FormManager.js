@@ -50,7 +50,7 @@ async function display(page, account, displayNumber=config.displayNumber) {
 }
 
 
-async function finder(page, account, keyword=config.filterKeyword) {
+async function finder(page, account, keyword=config.filterKeyword, reverseForms=false) {
    let isReload = await utils.reloadPage(page)
 
    try {
@@ -122,7 +122,8 @@ async function finder(page, account, keyword=config.filterKeyword) {
 
       availableItem = availableItem.filter(item => item.distance <= closest)               // take the closest form
       logger.logging(account, "Find available finished. Total links found: " + availableItem.length)
-      return availableItem
+      if (reverseForms) { return availableItem.reverse() }
+      else { return availableItem }
    }
    catch (err) {
       logger.logging(account, `ERROR: Cannot find available forms - SKIP`)
@@ -158,12 +159,12 @@ function distributor(listForms, accounts, maxForms=3) {
    return disAccounts
 }
 
-async function collector(page, keyword=config.filterKeyword, displayNumber=config.displayNumber) {
+async function collector(page, keyword=config.filterKeyword, displayNumber=config.displayNumber, reverseForms=false) {
    // get available forms in advance
    await filter(page, null, keyword, )                                        // filter 
    await display(page, null, displayNumber)                                   // display  
 
-   let listForms = await finder(page, null, keyword)                          // find all availables
+   let listForms = await finder(page, null, keyword, reverseForms)                          // find all availables
    logger.logging(null, "Collecting forms finished")
    return listForms
 }

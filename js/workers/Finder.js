@@ -7,19 +7,19 @@ const formManager = require('../managers/FormManager')
 const logger = require('./Logger')
 
 
-async function Finder(keyword = 'Hirabari', isHeadless = false) {
+async function Finder(keyword = 'Hirabari', isHeadless = false,  reverseForms=false) {
    try {
       const logPath = `${logger.logPath}`
       const formBrowser = await puppeteer.launch({ headless: isHeadless })
       const formPage = await formBrowser.newPage()
       await formPage.goto(config.mainUrl)
-      let listForms = await formManager.collector(formPage, keyword, config.displayNumber, false)
+      let listForms = await formManager.collector(formPage, keyword, config.displayNumber, false, reverseForms)
       formManager.exportJSON(listForms)
       await formPage.screenshot({ path: `${logPath}/display.png`, fullPage: true })
       return { listForms, formBrowser, formPage }
    } catch (error) {
       console.error(error)
-      return Finder(keyword, isHeadless)
+      return Finder(keyword, isHeadless, reverseForms)
    }
 }
 

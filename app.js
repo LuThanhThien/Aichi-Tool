@@ -21,20 +21,20 @@ const { log } = require('console');
 logger.logger()
 
 // tool
-async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=10000) {
+async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=10000, reverseForms=false) {
    const accounts = config.accounts                                  // list of accounts
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
    logger.logging(null, 
-      `ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}`)   // start time
+      `ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
       { listForms, formBrowser, formPage },
       loggedPages
    ] = await Promise.all([
-      Finder(keyword, 'new'),                // find all available forms
+      Finder(keyword, 'new', reverseForms),                // find all available forms
       Accountor(accounts, isHeadless)        // login all accounts
    ])                 
    
@@ -48,8 +48,8 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
          listForms,
          disPages 
       ] = await Promise.all([
-         formManager.finder(formPage, null, keyword),             // re-find all available forms
-         Distributor(loggedPages, accounts, keyword, maxForms)    // distribute forms to accounts
+         formManager.finder(formPage, null, keyword, reverseForms),  // re-find all available forms
+         Distributor(loggedPages, accounts, keyword, maxForms)       // distribute forms to accounts
       ])
 
 
@@ -86,12 +86,11 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
 }
 
 
-async function main() {
+async function main(capture=false, reverseForms=false) {
    const keyword = "Tosan"
    const headless = false
-   const capture = true
    const maxRenit = 0
-   tool(keyword, headless, capture, maxRenit)
+   tool(keyword, headless, capture, maxRenit, reverseForms)
 }
 
 
@@ -100,6 +99,7 @@ program
    .option('--tool')
    .option('--keyword <string>')
    .option('--max-renit <number>')
+   .option('--reverse-forms')
    .option('--headless')   
    .option('--capture')
 program.parse();
@@ -107,20 +107,21 @@ program.parse();
 const options = program.opts();
 // run
 if (options.tool === true) {
-   tool(options.keyword, options.headless, options.capture, options.maxRenit)
+   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms)
 }
 else if (options.drop === true) {
    // console.log('Cannot perform this action in this version')
    formEliminator.droper(options.capture)
 }
 else {
-   main()
+   let capture = true
+   main(capture, options.reverseForms)
 }
 
 
 
 
-
+// nexe app.js --build --verbose -t windows
 // node app --drop
 // node app --tool --keyword='GY' --capture
 // node app --tool --keyword='Hirabari' --capture
