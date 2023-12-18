@@ -115,7 +115,8 @@ else if (options.drop === true) {
 }
 else {
    let capture = true
-   main(capture, options.reverseForms)
+   let reverseForms = true
+   main(capture, reverseForms)
 }
 
 

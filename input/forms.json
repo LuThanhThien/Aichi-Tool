@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "title": "12月21日(木) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam",
+    "status": "受付終了しました",
+    "startDate": "2023年12月04日 07時30分",
+    "endDate": "2023年12月19日 12時00分",
+    "templateSeq": "85465",
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=85465&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": true,
+    "distance": -1243759000
+  },
+  {
+    "title": "12月22日(金) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam",
+    "status": "受付終了しました",
+    "startDate": "2023年12月04日 07時30分",
+    "endDate": "2023年12月20日 12時00分",
+    "templateSeq": "85466",
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=85466&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": true,
+    "distance": -1243759000
+  }
+]

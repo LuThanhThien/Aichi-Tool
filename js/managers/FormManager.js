@@ -106,10 +106,11 @@ async function finder(page, account, keyword=config.filterKeyword, reverseForms=
       // const upcomingStatus = "近日受付開始"
       const passedStatus = "受付終了しました" 
       const endedStatus = "終了しました"
-      availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
-      availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
+      // availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
+      // availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
       
       // availableItem = availableItem.filter(item => item.isPast x=== false)                 // ignore passed forms
+      availableItem = availableItem.filter(item => item.templateSeq === '85465' || item.templateSeq === '85466')                 // ignore passed forms
       
       let closest = Infinity
       for (item in availableItem) {
@@ -180,13 +181,13 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
 
    // check if form is available
    let isAvailable = await checkAvailability(newPage, account, form, i)
-   if (isAvailable === 'passed') { return false }
-   while (isAvailable === 'upcoming') {
+   // if (isAvailable === 'passed') { return false }
+   while (isAvailable === 'upcoming' || isAvailable === 'passed') {
       // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })    // reload page
       let isReloadForm = await utils.reloadPage(newPage)    // reload page
       isAvailable = await checkAvailability(newPage, account, form, i)
-      if (isAvailable === 'passed') { return false }
-      else if (isAvailable === 'available') { break }
+      // if (isAvailable === 'passed') { return false }
+      if (isAvailable === 'available') { break }
       else if (retry >= maxRetry && maxRetry != 0) {
          logger.logging(account, `Exceed max retry form [${i+1}]`)
          return false
@@ -294,7 +295,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
 
 
 async function checkAvailability(page, account, form, i) {
-   const passedStatus = "大変申し訳ございません。申込数が上限に達した為、締め切らせていただきました。"
+   const closedStatus = "大変申し訳ございません。申込数が上限に達した為、締め切らせていただきました。"
    const upcomingStatus = "申込期間ではありません。"
    let avaiStatus = await page.evaluate(() => {
       const errorMessageElement = document.querySelector('.errorMessage')
@@ -306,8 +307,8 @@ async function checkAvailability(page, account, form, i) {
       logger.logging(account, `Form [${i+1}] is upcoming, start at: ${form.startDate}`, false)
       return 'upcoming'
    }
-   else if (avaiStatus === passedStatus) {
-      logger.logging(account, `Form [${i+1}] is out of date, started at: ${form.startDate}`, false)
+   else if (avaiStatus === closedStatus) {
+      logger.logging(account, `Form [${i+1}] is full filled, started at: ${form.startDate}`, false)
       return 'passed'
    }
    else if (avaiStatus === null) {

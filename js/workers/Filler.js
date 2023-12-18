@@ -33,12 +33,34 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
       // auto fill form 
       let totalForms = thisInfo.length
       let n = 0
-      while (totalForms > 0 && n < listForms.length) {
-         const thisForm = listForms[n]
+      // while (totalForms > 0 && n < listForms.length) {
+      //    const thisForm = listForms[n]
+      //    if (filledForms[thisAccount.username].includes(thisForm.title)) {
+      //       logger.logging(thisAccount, `Auto fill form [${n+1}] skipped: ${thisForm.title}`, false)
+      //       n++
+      //       continue
+      //    }
+      //    logger.logging(thisAccount, `Auto fill form [${n+1}] begin: ${thisForm.title}`)
+      //    const newPage = await thisPage.browser().newPage()
+      //    let isNavigatedToForm = await utils.navigateTo(newPage, thisForm.link)
+      //    let isFail = await formManager.filler(newPage, thisAccount, thisForm, n+1, capture, test, thisInfo[totalForms-1])
+      //    logger.logging(thisAccount, `Auto fill form [${n+1}] finished - ${isFail ? 'FAILED' : 'SUCCESS'}`)        
+      //    if (isFail) {
+      //       const fail = {account: thisAccount.username, number: n+1, title: thisForm.title}
+      //       failStore.push(fail)
+      //    }          
+      //    else {
+      //       filledForms[thisAccount.username].push(thisForm.title)
+      //       totalForms--
+      //       totalSuccess++
+      //    }
+      //    await newPage.close()
+      //    n++
+      // }
+      await Promise.all(listForms.map(async (thisForm, i) => {
          if (filledForms[thisAccount.username].includes(thisForm.title)) {
             logger.logging(thisAccount, `Auto fill form [${n+1}] skipped: ${thisForm.title}`, false)
-            n++
-            continue
+            return
          }
          logger.logging(thisAccount, `Auto fill form [${n+1}] begin: ${thisForm.title}`)
          const newPage = await thisPage.browser().newPage()
@@ -56,7 +78,8 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
          }
          await newPage.close()
          n++
-      }
+      }))
+      
       logger.logging(thisAccount, "Account finished - END", false)}
       catch (err) {
          logger.logging(thisAccount, "ERROR: Account finished - END")
