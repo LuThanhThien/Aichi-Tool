@@ -55,7 +55,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
 
       // REALOAD DISPAGES
       if (reRun % 20 === 0) {
-         logger.logging(loggedPages.account, `RELOAD ACCOUNT PAGES`)
+         logger.logging(loggedPages.account, `RELOAD ACCOUNT PAGES`, false)
          await Promise.all(disPages.map(async (loggedPages, pageIndex) => {
             const thisPage = loggedPages.page
             let isReloadAccountPage = await utils.reloadPage(thisPage)
