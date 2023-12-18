@@ -36,7 +36,7 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
       while (totalForms > 0 && n < listForms.length) {
          const thisForm = listForms[n]
          if (filledForms[thisAccount.username].includes(thisForm.title)) {
-            logger.logging(thisAccount, `Auto fill form [${n+1}] skipped: ${thisForm.title}`)
+            logger.logging(thisAccount, `Auto fill form [${n+1}] skipped: ${thisForm.title}`, false)
             n++
             continue
          }
@@ -57,7 +57,7 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
          await newPage.close()
          n++
       }
-      logger.logging(thisAccount, "Account finished - END")}
+      logger.logging(thisAccount, "Account finished - END", false)}
       catch (err) {
          logger.logging(thisAccount, "ERROR: Account finished - END")
          console.log(err)

@@ -121,7 +121,9 @@ async function finder(page, account, keyword=config.filterKeyword, reverseForms=
       } 
 
       availableItem = availableItem.filter(item => item.distance <= closest)               // take the closest form
-      logger.logging(account, "Find available finished. Total links found: " + availableItem.length)
+      let totalFormsFound = availableItem.length
+      let isLog = (totalFormsFound > 0) ? true : false
+      logger.logging(account, "Find available finished. Total links found: " + availableItem.length, isLog)
       if (reverseForms) { return availableItem.reverse() }
       else { return availableItem }
    }
