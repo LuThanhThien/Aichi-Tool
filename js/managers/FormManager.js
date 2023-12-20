@@ -50,7 +50,7 @@ async function display(page, account, displayNumber=config.displayNumber) {
 }
 
 
-async function finder(page, account, keyword=config.filterKeyword, reverseForms=false) {
+async function finder(page, keyword=config.filterKeyword, reverseForms=false, hidden=false, templateSeqs=[]) {
    let isReload = await utils.reloadPage(page)
 
    try {
@@ -84,7 +84,7 @@ async function finder(page, account, keyword=config.filterKeyword, reverseForms=
                   status: getTextContent(statusElement),
                   startDate: getTextContent(startDateElement),
                   endDate: getTextContent(endDateElement),
-                  templateSeq: templateSeqElement ? templateSeqElement.value : null,
+                  templateSeq: templateSeqElement ? parseInt(templateSeqElement.value) : null,
                   link: selectors.linkPrefix + templateSeqElement.value + selectors.linkSuffix,
                   isAvailable: !!linkElement,
                   isPast: isPastFnc(getTextContent(startDateElement)),
@@ -98,7 +98,7 @@ async function finder(page, account, keyword=config.filterKeyword, reverseForms=
       }
       
       availableItem = availableItem.sort(customSort)                                      // sort by date
-      if (keyword === "Hirabari") { // using for hidden Hiraibari forms
+      if (keyword === "Hirabari" && hidden === true) { // using for hidden Hiraibari forms
          availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
          availableItem = availableItem.filter(item => !item.title.includes('<'))
       }
@@ -107,11 +107,15 @@ async function finder(page, account, keyword=config.filterKeyword, reverseForms=
       const passedStatus = "受付終了しました" 
       const endedStatus = "終了しました"
       // availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
-      // availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
+      availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
       
-      // availableItem = availableItem.filter(item => item.isPast x=== false)                 // ignore passed forms
-      availableItem = availableItem.filter(item => item.templateSeq === '85465' || item.templateSeq === '85466')                 // ignore passed forms
       
+      if (templateSeqs.length > 0) { 
+         console.log(templateSeqs)
+         availableItem = availableItem.filter(item => templateSeqs.includes(item.templateSeq)) // filter by templateSeqs
+      }       
+
+
       let closest = Infinity
       for (item in availableItem) {
          let thisStartDate = utils.stringToDate(availableItem[item].startDate)
@@ -124,12 +128,12 @@ async function finder(page, account, keyword=config.filterKeyword, reverseForms=
       availableItem = availableItem.filter(item => item.distance <= closest)               // take the closest form
       let totalFormsFound = availableItem.length
       let isLog = (totalFormsFound > 0) ? true : false
-      logger.logging(account, "Find available finished. Total links found: " + availableItem.length, isLog)
+      logger.logging(null, "Find available finished. Total links found: " + availableItem.length, isLog)
       if (reverseForms) { return availableItem.reverse() }
       else { return availableItem }
    }
    catch (err) {
-      logger.logging(account, `ERROR: Cannot find available forms - SKIP`)
+      logger.logging(null, `ERROR: Cannot find available forms - SKIP`)
       console.log(err)
       return []
    }
@@ -162,12 +166,12 @@ function distributor(listForms, accounts, maxForms=3) {
    return disAccounts
 }
 
-async function collector(page, keyword=config.filterKeyword, displayNumber=config.displayNumber, reverseForms=false) {
+async function collector(page, keyword=config.filterKeyword, displayNumber=config.displayNumber, reverseForms=false, hidden=false, templateSeqs=[]) {
    // get available forms in advance
    await filter(page, null, keyword, )                                        // filter 
    await display(page, null, displayNumber)                                   // display  
 
-   let listForms = await finder(page, null, keyword, reverseForms)                          // find all availables
+   let listForms = await finder(page, keyword, reverseForms, hidden, templateSeqs)                          // find all availables
    logger.logging(null, "Collecting forms finished")
    return listForms
 }
@@ -181,7 +185,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
 
    // check if form is available
    let isAvailable = await checkAvailability(newPage, account, form, i)
-   // if (isAvailable === 'passed') { return false }
+   if (isAvailable === 'passed') { return false }
    while (isAvailable === 'upcoming' || isAvailable === 'passed') {
       // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })    // reload page
       let isReloadForm = await utils.reloadPage(newPage)    // reload page
@@ -196,7 +200,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
    }
    
    // 1. click agree, go to form link
-   if (capture) {await newPage.screenshot({path: `${logPath}/form-[${i+1}]-begin.png`, fullPage: true})}
+   if (capture) {await newPage.screenshot({path: `${logPath}/BEGIN-${form.title}.png`, fullPage: true})}
    try {
       await newPage.evaluate(() => {
          const okBtnHTML = 'ok'  
@@ -216,6 +220,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
    }
 
    // 2. fill form and click agree, go to confirm page
+   await utils.captureHTML(newPage, `${logPath}/HTML-${form.title}.mhtml`)
    let fakeInfo = {
       phoneNumber: config.infoFake.phoneNumber[Math.random() * config.infoFake.phoneNumber.length | 0],
       schoolName: config.infoFake.schoolName[Math.random() * config.infoFake.schoolName.length | 0],
@@ -248,7 +253,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       }, fakeInfo, test, info)
 
       const focusSubmitHTML = `input[name='item[0].textData']`
-      if (capture) {await newPage.screenshot({path: `${logPath}/form-[${i+1}]-draft.png`, fullPage: true})}
+      if (capture) {await newPage.screenshot({path: `${logPath}/DRAFT-${form.title}.png`, fullPage: true})}
       await newPage.focus(focusSubmitHTML)
       await newPage.keyboard.press('Enter')
       await newPage.waitForNavigation()
@@ -274,7 +279,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
          await dialog.accept()
       })
       await newPage.waitForNavigation()
-      if (capture) {await newPage.screenshot({path: `${logPath}/form-[${i+1}]-end.png`, fullPage: true})}
+      if (capture) {await newPage.screenshot({path: `${logPath}/END-${form.title}.png`, fullPage: true})}
    }
    catch (err) {
       logger.logging(account, `ERROR FORM [${i+1}]: Confirm button not found`)
@@ -287,7 +292,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
    }
 
    // 4. check if success or fail
-   await utils.captureHTML(newPage, `${logPath}/form-[${i+1}]-result.mhtml`)
+   // await utils.captureHTML(newPage, `${logPath}/form-[${i+1}]-result.mhtml`)
    return await newPage.evaluate(() => {
          return !!document.querySelector('.errorMessage') // !! converts anything to boolean
        })

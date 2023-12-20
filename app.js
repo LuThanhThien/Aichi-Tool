@@ -21,20 +21,27 @@ const { log } = require('console');
 logger.logger()
 
 // tool
-async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=10000, reverseForms=false) {
+async function tool(keyword='Hirabari', 
+                     headless=false, 
+                     capture=false, 
+                     maxRenit=10000, 
+                     reverseForms=false,
+                     multiForms=false,
+                     hidden=false,
+                     templateSeqs=[]) {
    const accounts = config.accounts                                  // list of accounts
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
    logger.logging(null, 
-      `ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}`)   // start time
+      `ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
       { listForms, formBrowser, formPage },
       loggedPages
    ] = await Promise.all([
-      Finder(keyword, 'new', reverseForms),                // find all available forms
+      Finder(keyword, 'new', reverseForms, hidden, templateSeqs),                // find all available forms
       Accountor(accounts, isHeadless)        // login all accounts
    ])                 
    
@@ -48,7 +55,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
          listForms,
          disPages 
       ] = await Promise.all([
-         formManager.finder(formPage, null, keyword, reverseForms),  // re-find all available forms
+         formManager.finder(formPage, keyword, reverseForms, hidden, templateSeqs),  // re-find all available forms
          Distributor(loggedPages, accounts, keyword, maxForms)       // distribute forms to accounts
       ])
 
@@ -64,7 +71,7 @@ async function tool(keyword='Hirabari', headless=false, capture=false, maxRenit=
       
       let filledForms = formManager.importJSON(config.accountJSONPath) || {}   // store filled forms
       // AUTO FILL FORMS
-      failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test)
+      failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test, multiForms)
 
       // LOG FAILS AND SUCCESSFUL FORMS
       if (failStore.length > 0) {
@@ -102,12 +109,22 @@ program
    .option('--reverse-forms')
    .option('--headless')   
    .option('--capture')
+   .option('--hidden')
+   .option('--template-seqs <string>')
+   .option('--multi-forms')
 program.parse();
 
 const options = program.opts();
 // run
 if (options.tool === true) {
-   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms)
+   let templateSeqs = []
+   try {
+      let templateSeqs = JSON.parse("[" + options.templateSeqs + "]")
+   }
+   catch (error) {
+      console.log('Cannot parse templateSeqs')
+   }
+   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, templateSeqs)
 }
 else if (options.drop === true) {
    // console.log('Cannot perform this action in this version')
@@ -125,6 +142,7 @@ else {
 // nexe app.js --build --verbose -t windows
 // node app --drop
 // node app --tool --keyword='GY' --capture
+// node app --tool --keyword='Hirabari' --capture --template-seqs "88006,88007,88008,88009,88010"
 // node app --tool --keyword='Hirabari' --capture
 // node app --tool --keyword='Tosan' --capture
 
