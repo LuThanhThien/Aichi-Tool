@@ -1,10 +1,7 @@
-const puppeteer = require('puppeteer-extra')
+const puppeteer = require('puppeteer')
 const config = require('../config')
 const utils = require('../utils')
 
-// add stealth plugin and use defaults (all evasion techniques) 
-const StealthPlugin = require('puppeteer-extra-plugin-stealth') 
-puppeteer.use(StealthPlugin()) 
 
 // objects
 const logger = require('./Logger')

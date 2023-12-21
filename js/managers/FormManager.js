@@ -1,5 +1,5 @@
 // Description: This file contains the functions that are used to manage the forms.
-const puppeteer = require('puppeteer-extra')
+const puppeteer = require('puppeteer')
 const fs = require('fs')  
 const config = require('../config')
 const utils = require('../utils')
@@ -7,9 +7,6 @@ const logger = require('../workers/Logger')
 const { link } = require('fs')
 const { log } = require('console')
 
-// add stealth plugin and use defaults (all evasion techniques) 
-const StealthPlugin = require('puppeteer-extra-plugin-stealth') 
-puppeteer.use(StealthPlugin()) 
 
 async function filter(page, account, keyword=config.filterKeyword) {
 
