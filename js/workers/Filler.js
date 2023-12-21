@@ -1,6 +1,10 @@
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-extra')
 const config = require('../config')
 const utils = require('../utils')
+
+// add stealth plugin and use defaults (all evasion techniques) 
+const StealthPlugin = require('puppeteer-extra-plugin-stealth') 
+puppeteer.use(StealthPlugin()) 
 
 // objects
 const logger = require('./Logger')
@@ -44,10 +48,11 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
             }
             logger.logging(thisAccount, `Auto fill form ${thisForm.title} begin`)
             const newPage = await thisPage.browser().newPage()
+            // await newPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
             let isNavigatedToForm = await utils.navigateTo(newPage, thisForm.link)
             let isFail = await formManager.filler(newPage, thisAccount, thisForm, n+1, capture, test, thisInfo[totalForms-1])
             logger.logging(thisAccount, `Auto fill form ${thisForm.title} finished - ${isFail ? 'FAILED' : 'SUCCESS'}`)        
-            if (isFail) {
+            if (!isFail) {
                const fail = {account: thisAccount.username, number: n+1, title: thisForm.title}
                failStore.push(fail)
             }          
@@ -68,10 +73,11 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
             }
             logger.logging(thisAccount, `Auto fill form [${n+1}] begin: ${thisForm.title}`)
             const newPage = await thisPage.browser().newPage()
+            // await newPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
             let isNavigatedToForm = await utils.navigateTo(newPage, thisForm.link)
             let isFail = await formManager.filler(newPage, thisAccount, thisForm, n+1, capture, test, thisInfo[totalForms-1])
             logger.logging(thisAccount, `Auto fill form [${n+1}] finished - ${isFail ? 'FAILED' : 'SUCCESS'}`)        
-            if (isFail) {
+            if (!isFail) {
                const fail = {account: thisAccount.username, number: n+1, title: thisForm.title}
                failStore.push(fail)
             }          

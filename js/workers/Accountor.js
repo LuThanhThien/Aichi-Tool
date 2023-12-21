@@ -1,6 +1,10 @@
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-extra')
 const config = require('../config')
 const utils = require('../utils')
+
+// add stealth plugin and use defaults (all evasion techniques) 
+const StealthPlugin = require('puppeteer-extra-plugin-stealth') 
+puppeteer.use(StealthPlugin()) 
 
 // objects
 const logger = require('./Logger')
@@ -11,6 +15,7 @@ async function Accountor(accounts, isHeadless=false) {
       logger.logging(account, "Log in account - BEGIN")
       const promiseBrowser = await puppeteer.launch({ headless: isHeadless })
       const promisePage = await promiseBrowser.newPage()
+      // await promisePage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
       let isLogin = await accountManager.logIn(promisePage, account)
       if (!isLogin) {
          logger.logging(account, "Log in account - FAILED")

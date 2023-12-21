@@ -1,11 +1,15 @@
 // Description: This file contains the functions that are used to manage the forms.
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-extra')
 const fs = require('fs')  
 const config = require('../config')
 const utils = require('../utils')
 const logger = require('../workers/Logger')
 const { link } = require('fs')
 const { log } = require('console')
+
+// add stealth plugin and use defaults (all evasion techniques) 
+const StealthPlugin = require('puppeteer-extra-plugin-stealth') 
+puppeteer.use(StealthPlugin()) 
 
 async function filter(page, account, keyword=config.filterKeyword) {
 
@@ -98,7 +102,7 @@ async function finder(page, keyword=config.filterKeyword, reverseForms=false, hi
       }
       
       availableItem = availableItem.sort(customSort)                                      // sort by date
-      if (keyword === "Hirabari" && hidden === true) { // using for hidden Hiraibari forms
+      if (hidden === true) { // using for hidden Hiraibari forms
          availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
          availableItem = availableItem.filter(item => !item.title.includes('<'))
       }
@@ -106,7 +110,7 @@ async function finder(page, keyword=config.filterKeyword, reverseForms=false, hi
       // const upcomingStatus = "近日受付開始"
       const passedStatus = "受付終了しました" 
       const endedStatus = "終了しました"
-      // availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
+      availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
       availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
       
       
@@ -185,7 +189,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
 
    // check if form is available
    let isAvailable = await checkAvailability(newPage, account, form, i)
-   if (isAvailable === 'passed') { return false }
+   // if (isAvailable === 'passed') { return false }
    while (isAvailable === 'upcoming' || isAvailable === 'passed') {
       // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })    // reload page
       let isReloadForm = await utils.reloadPage(newPage)    // reload page
@@ -294,7 +298,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
    // 4. check if success or fail
    // await utils.captureHTML(newPage, `${logPath}/form-[${i+1}]-result.mhtml`)
    return await newPage.evaluate(() => {
-         return !!document.querySelector('.errorMessage') // !! converts anything to boolean
+         return !document.querySelector('.errorMessage') // !! converts anything to boolean
        })
 }
 

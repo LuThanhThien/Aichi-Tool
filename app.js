@@ -1,7 +1,11 @@
 require('events').EventEmitter.defaultMaxListeners = 20
-const { program } = require('commander');
+const { program } = require('commander')
 const config = require('./js/config')
 const utils = require('./js/utils')
+const puppeteerExtra = require('puppeteer-extra')
+const Stealth = require('puppeteer-extra-plugin-stealth')
+
+puppeteerExtra.use(Stealth())
 
 // objects
 const formEliminator = require('./js/managers/FormInquery')
@@ -13,9 +17,9 @@ const logger = require('./js/workers/Logger')
 const Finder = require('./js/workers/Finder')
 const Accountor = require('./js/workers/Accountor')
 const Distributor = require('./js/workers/Distributor')
-const Taker = require('./js/workers/Taker');
-const Filler = require('./js/workers/Filler');
-const { log } = require('console');
+const Taker = require('./js/workers/Taker')
+const Filler = require('./js/workers/Filler')
+const { log } = require('console')
 
 // init logger
 logger.logger()
@@ -61,7 +65,7 @@ async function tool(keyword='Hirabari',
 
 
       // REALOAD DISPAGES
-      if (reRun % 20 === 0) {
+      if (reRun % 20 === 0 && reRun !== 0) {
          logger.logging(loggedPages.account, `RELOAD ACCOUNT PAGES`, false)
          await Promise.all(disPages.map(async (loggedPages, pageIndex) => {
             const thisPage = loggedPages.page
@@ -100,10 +104,27 @@ async function main(capture=false, reverseForms=false) {
    tool(keyword, headless, capture, maxRenit, reverseForms)
 }
 
+async function test(){
+   const browserObj = await puppeteerExtra.launch( { headless: false } )
+  const newpage = await browserObj.newPage()
+ 
+  await newpage.setViewport({ width: 1280, height: 720 })
+
+  await newpage.setUserAgent(
+    'Mozilla/5.0 (Windows NT 10.0 Win64 x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
+
+  await newpage.goto(config.mainUrl)
+  await newpage.waitForTimeout(20000) // Wait for 20 seconds
+
+  await newpage.screenshot({ path: './log/screenshot.png' })
+
+  await browserObj.close()
+}
 
 program
    .option('--drop')
    .option('--tool')
+   .option('--test')
    .option('--keyword <string>')
    .option('--max-renit <number>')
    .option('--reverse-forms')
@@ -112,9 +133,9 @@ program
    .option('--hidden')
    .option('--template-seqs <string>')
    .option('--multi-forms')
-program.parse();
+program.parse()
 
-const options = program.opts();
+const options = program.opts()
 // run
 if (options.tool === true) {
    let templateSeqs = []
@@ -130,6 +151,9 @@ else if (options.drop === true) {
    // console.log('Cannot perform this action in this version')
    formEliminator.droper(options.capture)
 }
+else if (options.test === true) {
+   test()
+}
 else {
    let capture = true
    let reverseForms = true
@@ -139,7 +163,7 @@ else {
 
 
 
-// nexe app.js --build --verbose -t windows
+// nexe app.js --build --verbose -t window
 // node app --drop
 // node app --tool --keyword='GY' --capture
 // node app --tool --keyword='Hirabari' --capture --template-seqs "88006,88007,88008,88009,88010"

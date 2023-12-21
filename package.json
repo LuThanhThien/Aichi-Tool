@@ -21,6 +21,8 @@
     "csv-load-sync": "^2.3.1",
     "pkg": "^5.8.1",
     "pkg-bundler": "^1.0.0-1",
-    "puppeteer": "^21.5.2"
+    "puppeteer": "^21.5.2",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }

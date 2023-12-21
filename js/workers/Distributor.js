@@ -1,8 +1,12 @@
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-extra')
 const config = require('../config')
 const utils = require('../utils')
 const logger = require('./Logger')
 const accountManager = require('../managers/AccountManager')
+
+// add stealth plugin and use defaults (all evasion techniques) 
+const StealthPlugin = require('puppeteer-extra-plugin-stealth') 
+puppeteer.use(StealthPlugin()) 
 
 function generate(prob=0.4) {
    // This function is used to generate random customer data
