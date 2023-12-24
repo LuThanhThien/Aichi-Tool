@@ -1,4 +1,4 @@
-const config = require('../config')
+const config = require('../configure/config')
 const utils = require('../utils')
 const logger = require('../workers/Logger')
 const formManager = require('./FormManager')
@@ -9,7 +9,7 @@ const formManager = require('./FormManager')
 async function logIn(page, account, depth=0, maxDepth=10) {
    // This function is used to log in to the account 
    // navigate to login page
-   await page.goto(config.logInUrl)
+   await page.goto(config.URLs.logInUrl)
    await page.waitForTimeout(2000)
 
    // login
@@ -25,7 +25,7 @@ async function logIn(page, account, depth=0, maxDepth=10) {
    }
    catch (err) {
       try {
-         await page.goto(config.mainUrl)
+         await page.goto(config.URLs.mainUrl)
 
          await page.evaluate(() => {
             const loginButton = document.getElementById("pcLogin")
@@ -60,7 +60,7 @@ async function accountFormsInquery(page, account) {
    // This function is used to find all forms in the account
    // navigate to inquery page
    try {
-      await page.goto(config.inqueryUrl)
+      await page.goto(config.URLs.inqueryUrl)
       let listItems = await formManager.findInqueryForms(page)
       console.log(listItems)
    }

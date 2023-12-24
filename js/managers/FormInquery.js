@@ -1,5 +1,5 @@
 
-const config = require('../config')
+const config = require('../configure/config')
 const utils = require('../utils')
 const logger = require('../workers/Logger')
 const puppeteer = require('puppeteer')
@@ -26,20 +26,20 @@ async function droper(capture=false) {
    try {
       const accounts = config.accounts
       await confirm('Delete All');
-      logger.logging(null, `Deletion - BEGIN`)
+      logger.log(`Deletion - BEGIN`)
       await Promise.all(accounts.map(async (account) => {
          if (config.testAccounts.includes(account.username)) {
             const browser = await puppeteer.launch({ headless: 'new' })
             const page = await browser.newPage()
-            await page.goto(config.mainUrl)
+            await page.goto(config.URLs.mainUrl)
             await dropAll(page, account, capture);
             await browser.close()
          }
          else {
-            logger.logging(null, `ERROR: ${account.username} is not in test accounts - SKIP`)
+            logger.log(`ERROR: ${account.username} is not in test accounts - SKIP`)
          }
       }))
-      logger.logging(null, `Deletion - END`);
+      logger.log(`Deletion - END`);
       
    } catch (error) {
       console.error(error.message);
@@ -50,11 +50,11 @@ async function droper(capture=false) {
 async function dropAll(page, account, capture=false) {
    
    await accountManager.logIn(page, account)                                                    // login
-   logger.logging(account, "Login finished - BEGIN")
+   logger.log(account, "Login finished - BEGIN")
 
-   await page.goto(config.inqueryUrl)
+   await page.goto(config.URLs.inqueryUrl)
    
-   logger.logging(account, "Navigate to inquery page finished")
+   logger.log(account, "Navigate to inquery page finished")
    if (capture) { await page.screenshot({path: `${logger.logPath}/${account.username}/inquery.png`, fullPage: true}) }
 
    // find all inquery forms
@@ -63,11 +63,11 @@ async function dropAll(page, account, capture=false) {
 
    // delete all inquery forms
    if (listItems.length == 0) {
-      logger.logging(account, "No inquery form found - END")
+      logger.log(account, "No inquery form found - END")
       return
    }
    else {
-      logger.logging(account, `Found ${listItems.length} inquery forms`)
+      logger.log(account, `Found ${listItems.length} inquery forms`)
    }
 
    for (let i = 0; i < listItems.length; i++) {
@@ -84,7 +84,7 @@ async function dropAll(page, account, capture=false) {
       await page.evaluate(() => {
          document.querySelector(`input[id='delete']`).click();
       })
-      logger.logging(account, `Inquery form [${i+1}] deleting`)
+      logger.log(account, `Inquery form [${i+1}] deleting`)
       await page.waitForNavigation()
 
       // confirm delete
@@ -99,13 +99,13 @@ async function dropAll(page, account, capture=false) {
       await page.waitForNavigation()
 
       if (capture) { await page.screenshot({path: `${logger.logPath}/${account.username}/inquery-done-${i+1}.png`, fullPage: true}) }
-      logger.logging(account, `Inquery form [${i+1}] finished`)
+      logger.log(account, `Inquery form [${i+1}] finished`)
 
       // back to inquery page
-      await page.goto(config.inqueryUrl)
+      await page.goto(config.URLs.inqueryUrl)
    }
    
-   logger.logging(null, "Deletion process finished - END")
+   logger.log("Deletion process finished - END")
 }
 
 module.exports = {   

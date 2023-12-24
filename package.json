@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "bin": "app.js",
   "directories": {
     "doc": "docs"
   },
@@ -10,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "node node_modules/puppeteer/install.mjs",
     "start": "node app.js",
-    "package": "node ./build.js"
+    "package": "pkg -t node16-macos-x64 -o Tosan ."
   },
   "author": "",
   "license": "ISC",
@@ -19,10 +20,12 @@
     "bluebird": "^3.7.2",
     "commander": "^11.1.0",
     "csv-load-sync": "^2.3.1",
+    "js-yaml": "^4.1.0",
     "pkg": "^5.8.1",
     "pkg-bundler": "^1.0.0-1",
     "puppeteer": "^21.5.2",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "yaml": "^2.3.4"
   }
 }

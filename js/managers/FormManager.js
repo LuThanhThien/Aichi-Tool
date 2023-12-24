@@ -1,17 +1,18 @@
 // Description: This file contains the functions that are used to manage the forms.
 const puppeteer = require('puppeteer')
 const fs = require('fs')  
-const config = require('../config')
+const config = require('../configure/config')
+const dir = require('../configure/dir')
 const utils = require('../utils')
 const logger = require('../workers/Logger')
 const { link } = require('fs')
 const { log } = require('console')
 
 
-async function filter(page, account, keyword=config.filterKeyword) {
+async function filter(page, account, keyword=config.args.keyword) {
 
    try {
-      if (page.url !== config.mainUrl) { await page.goto(config.mainUrl) }   // redirect to main page
+      if (page.url !== config.URLs.mainUrl) { await page.goto(config.URLs.mainUrl) }   // redirect to main page
       const filterInputHTML = "templateName"
       await page.evaluate( (filterInputHTML, keyword) => {
          document.getElementsByName(filterInputHTML)[0].value = keyword       // filter by keyword
@@ -20,21 +21,21 @@ async function filter(page, account, keyword=config.filterKeyword) {
       await page.keyboard.press('Enter')                                      // press enter to filter
       await page.waitForNavigation()
 
-      logger.logging(account, "Filter finished")
+      logger.log("Filter finished", account)
    }
    catch (err) {
-      logger.logging(account, `ERROR: Cannot filter - SKIP`)
+      logger.log(`ERROR: Cannot filter - SKIP`, account)
       console.log(err)
       return false
    }
 }
 
-async function display(page, account, displayNumber=config.displayNumber) {
+async function display(page, account, displayNumber=config.args.displayNumber) {
    try {
       let availables = [120,50]
       if (!availables.includes(displayNumber)) 
       {
-         logger.logging(account, `ERROR: ${displayNumber} is not in availables - SKIP`)
+         logger.log(`ERROR: ${displayNumber} is not in availables - SKIP`, account)
          return false
       }
       // const displaySelectBoxHTML = "top_ken_selectbox"
@@ -42,16 +43,16 @@ async function display(page, account, displayNumber=config.displayNumber) {
       await page.goto(dispUrl)                                             // display n forms
    }
    catch (err) {
-      logger.logging(account, `ERROR: Cannot display ${displayNumber} forms - SKIP`)
+      logger.log(`ERROR: Cannot display ${displayNumber} forms - SKIP`, account)
       console.log(err)
       return false
    }
-   logger.logging(account, `Display ${displayNumber} forms finished`)
+   logger.log(`Display ${displayNumber} forms finished`, account)
    return true
 }
 
 
-async function finder(page, keyword=config.filterKeyword, reverseForms=false, hidden=false, templateSeqs=[]) {
+async function finder(page, keyword=config.args.keyword, reverseForms=false, hidden=false, templateSeqs=[]) {
    let isReload = await utils.reloadPage(page)
 
    try {
@@ -129,12 +130,12 @@ async function finder(page, keyword=config.filterKeyword, reverseForms=false, hi
       availableItem = availableItem.filter(item => item.distance <= closest)               // take the closest form
       let totalFormsFound = availableItem.length
       let isLog = (totalFormsFound > 0) ? true : false
-      logger.logging(null, "Find available finished. Total links found: " + availableItem.length, isLog)
+      logger.log("Find available finished. Total links found: " + availableItem.length, null, isLog)
       if (reverseForms) { return availableItem.reverse() }
       else { return availableItem }
    }
    catch (err) {
-      logger.logging(null, `ERROR: Cannot find available forms - SKIP`)
+      logger.log(`ERROR: Cannot find available forms - SKIP`)
       console.log(err)
       return []
    }
@@ -167,13 +168,13 @@ function distributor(listForms, accounts, maxForms=3) {
    return disAccounts
 }
 
-async function collector(page, keyword=config.filterKeyword, displayNumber=config.displayNumber, reverseForms=false, hidden=false, templateSeqs=[]) {
+async function collector(page, keyword=config.args.keyword, displayNumber=config.args.displayNumber, reverseForms=false, hidden=false, templateSeqs=[]) {
    // get available forms in advance
    await filter(page, null, keyword, )                                        // filter 
    await display(page, null, displayNumber)                                   // display  
 
    let listForms = await finder(page, keyword, reverseForms, hidden, templateSeqs)                          // find all availables
-   logger.logging(null, "Collecting forms finished")
+   logger.log("Collecting forms finished")
    return listForms
 }
 
@@ -194,7 +195,7 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       // if (isAvailable === 'passed') { return false }
       if (isAvailable === 'available') { break }
       else if (retry >= maxRetry && maxRetry != 0) {
-         logger.logging(account, `Exceed max retry form [${i+1}]`)
+         logger.log(`Exceed max retry form [${i+1}]`, account)
          return false
       }
       retry++
@@ -211,26 +212,28 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       await newPage.waitForNavigation()
    }
    catch (err) {
-      logger.logging(account, `ERROR FORM [${i+1}]: Agree button not found`)
+      logger.log(`ERROR FORM [${i+1}]: Agree button not found`, account)
       console.log(err)
       return false
    }
    if (newPage.url() === beginUrl) {
-      logger.logging(account, `ERROR FORM [${i+1}]: Agree button not found`)
+      logger.log(`ERROR FORM [${i+1}]: Agree button not found`, account)
       return false
    }
 
    // 2. fill form and click agree, go to confirm page
    await utils.captureHTML(newPage, `${logPath}/HTML-${form.title}.mhtml`)
    let fakeInfo = {
-      phoneNumber: config.infoFake.phoneNumber[Math.random() * config.infoFake.phoneNumber.length | 0],
-      schoolName: config.infoFake.schoolName[Math.random() * config.infoFake.schoolName.length | 0],
-      dateGrad: config.infoFake.dateGrad[Math.random() * config.infoFake.dateGrad.length | 0],
-      examinNumber: config.infoFake.examinNumber[Math.random() * config.infoFake.examinNumber.length | 0],
+      phoneNumber: config.fake.phoneNumber[Math.random() * config.fake.phoneNumber.length | 0],
+      schoolName: config.fake.schoolName[Math.random() * config.fake.schoolName.length | 0],
+      dateGrad: config.fake.dateGrad[Math.random() * config.fake.dateGrad.length | 0],
+      examinNumber: config.fake.examinNumber[Math.random() * config.fake.examinNumber.length | 0],
    }
    try {
       await newPage.evaluate((fakeInfo, test, info) => {
          if (test) {
+            // var form = document.getElementById('offerForm')
+            // form.submit()
             document.getElementsByName("item[0].textData2")[0].value = info.firstName
             document.getElementsByName("item[0].textData")[0].value = info.lastName
             document.getElementsByName("item[2].textData")[0].value = info.dateBirth
@@ -260,12 +263,12 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       await newPage.waitForNavigation()
    }
    catch (err) {
-      logger.logging(account, `ERROR FORM [${i+1}]: Form not found or data not valid`)
+      logger.log(`ERROR FORM [${i+1}]: Form not found or data not valid`, account)
       console.log(err)
       return false
    }
    if (newPage.url() === config.formUrl) {
-      logger.logging(account, `ERROR FORM [${i+1}]: Form not found or data not valid`)
+      logger.log(`ERROR FORM [${i+1}]: Form not found or data not valid`, account)
       return false
    }
 
@@ -283,12 +286,12 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       if (capture) {await newPage.screenshot({path: `${logPath}/END-${form.title}.png`, fullPage: true})}
    }
    catch (err) {
-      logger.logging(account, `ERROR FORM [${i+1}]: Confirm button not found`)
+      logger.log(`ERROR FORM [${i+1}]: Confirm button not found`, account)
       console.log(err)
       return false
    }
    if (newPage.url() === config.confirmUrl) {
-      logger.logging(account, `ERROR FORM [${i+1}]: Confirm button not found`)
+      logger.log(`ERROR FORM [${i+1}]: Confirm button not found`, account)
       return false
    }
 
@@ -310,15 +313,15 @@ async function checkAvailability(page, account, form, i) {
 
    // console.log(avaiStatus)
    if (avaiStatus === upcomingStatus) {
-      logger.logging(account, `Form [${i+1}] is upcoming, start at: ${form.startDate}`, false)
+      logger.log(`Form [${i+1}] is upcoming, start at: ${form.startDate}`, account, false)
       return 'upcoming'
    }
    else if (avaiStatus === closedStatus) {
-      logger.logging(account, `Form [${i+1}] is full filled, started at: ${form.startDate}`, false)
+      logger.log(`Form [${i+1}] is full filled, started at: ${form.startDate}`, account, false)
       return 'passed'
    }
    else if (avaiStatus === null) {
-      logger.logging(account, `Form [${i+1}] is available now, started at: ${form.startDate}`, false)
+      logger.log(`Form [${i+1}] is available now, started at: ${form.startDate}`, account, false)
       return 'available'
    }
 }
@@ -362,32 +365,32 @@ async function findInqueryForms(page) {
 
 
 // API for interact between workers
-function exportJSON(disForms, path=config.formJSONPath) {
+function exportJSON(disForms, path=dir.out.json.formList.path) {
    let json = JSON.stringify(disForms, null, 2) // The third argument (2) is for indentation
    fs.writeFile(path, json, 'utf8', (err) => {
       if (err) {
-         logger.logging(null, "ERROR: Cannot write JSON data to " + path)
-         console.log(err)
+         logger.log("ERROR: Cannot write JSON data to " + path)
+         console.error(err)
       }
    })
-   // logger.logging(null, "JSON data has been written to " + path)
+   // logger.log("JSON data has been written to " + path)
 }
 
-function importJSON(path=config.formJSONPath) {
+function importJSON(path=dir.out.json.formList.path) {
    try {
       const jsonString = fs.readFileSync(path, 'utf8')
       const jsonObject = JSON.parse(jsonString)
-      // logger.logging(null, 'Received JSON file successfully')
+      // logger.log('Received JSON file successfully')
       return jsonObject
    }
    catch(err) {
-      logger.logging(null, 'ERROR: Cannot read JSON file or JSON file is empty')
-      console.log(err)
+      logger.log('ERROR: Cannot read JSON file or JSON file is empty')
+      console.error(err)
       return {}
    }
 }
 
-function checkJSON(newJSONObj, path=config.formJSONPath) {
+function checkJSON(newJSONObj, path=dir.out.json.formList.path) {
    try {
       const oldJSONObj = importJSON(path)
       for (let i = 0 ; i < oldJSONObj.length ; i++) {
@@ -397,17 +400,17 @@ function checkJSON(newJSONObj, path=config.formJSONPath) {
          delete newJSONObj[i].distance
       }
       if (JSON.stringify(oldJSONObj) === JSON.stringify(newJSONObj)) {
-         logger.logging(null, 'JSON Objects are the same')
+         logger.log('JSON Objects are the same')
          return true
       }
       else {
-         logger.logging(null, 'JSON Objects are different')
+         logger.log('JSON Objects are different')
          return false
       }
    }
    catch(err) {
-      logger.logging(null, 'ERROR: Cannot check JSON Objects')
-      console.log(err)
+      logger.log('ERROR: Cannot check JSON Objects')
+      console.error(err)
       return false
    }
 }

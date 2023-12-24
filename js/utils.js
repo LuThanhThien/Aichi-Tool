@@ -1,4 +1,5 @@
-const config = require('./config')
+const config = require('./configure/config')
+const dir = require('./configure/dir')
 const fs = require('fs')
 const logger = require('./workers/Logger')
 
@@ -42,15 +43,14 @@ async function reloadPage(page, maxDepth=100) {
    while (retryCount < maxDepth || maxDepth == 0) {
          try {
             await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })
-            logger.logging(null, `Reload page - SUCCESS`, false)
             return true  // Exit the loop if reloading is successful
          } catch (err) {
-            logger.logging(null, `ERROR: Cannot reload page - Retry ${retryCount + 1}/${maxDepth}`)
-            logger.logging(null, err)
+            logger.log(`ERROR: Cannot reload page - Retry ${retryCount + 1}/${maxDepth}`)
+            logger.log(err)
             retryCount++
          }
    }
-   logger.logging(null, `Max retries reached. Reload page - FAILED`)
+   logger.log(`Max retries reached. Reload page - FAILED`)
    return false
 }
 
@@ -60,15 +60,15 @@ async function navigateTo(page, url, maxDepth=100) {
    while (retryCount < maxDepth || maxDepth == 0) {
          try {
             await page.goto(url)
-            logger.logging(null, `Navigate to ${url} - SUCCESS`, false)
+            logger.log(`Navigate to ${url} - SUCCESS`, false)
             return true  // Exit the loop if navigating is successful
          } catch (err) {
-            logger.logging(null, `ERROR: Cannot navigate to ${url} - Retry ${retryCount + 1}/${maxDepth}`)
-            logger.logging(null, err)
+            logger.log(`ERROR: Cannot navigate to ${url} - Retry ${retryCount + 1}/${maxDepth}`)
+            logger.log(err)
             retryCount++
          }
    }
-   logger.logging(null, `Max retries reached. Navigate to ${url} - FAILED`)
+   logger.log(`Max retries reached. Navigate to ${url} - FAILED`)
    return false
 
 }
@@ -108,6 +108,32 @@ function isPast(stringDate=null) {
 }
 
 
+// API for interact between workers
+function exportJSON(disForms, path=dir.out.json.OfferList) {
+   let json = JSON.stringify(disForms, null, 2) // The third argument (2) is for indentation
+   fs.writeFile(path, json, 'utf8', (err) => {
+      if (err) {
+         logger.log("ERROR: Cannot write JSON data to " + path)
+         console.error(err)
+      }
+   })
+   // logger.log("JSON data has been written to " + path)
+}
+
+function importJSON(path=dir.out.json.OfferList) {
+   try {
+      const jsonString = fs.readFileSync(path, 'utf8')
+      const jsonObject = JSON.parse(jsonString)
+      // logger.log('Received JSON file successfully')
+      return 
+   }
+   catch(err) {
+      logger.log('ERROR: Cannot read JSON file or JSON file is empty')
+      console.error(err)
+      return {}
+   }
+}
+
 module.exports = {
    redirectMain,
    captureHTML,
@@ -115,12 +141,14 @@ module.exports = {
    reloadPage, navigateTo,
    stringToDate,
    getJSTDateTime,
+   exportJSON,
+   importJSON,
  }
 
  
 // const targetDate = '2023年12月07日 16時30分'
 // const result = stringToDate(targetDate)
 // const isPat = isPast(targetDate)
-// logger.logging(isPat)
+// logger.log(isPat)
  
 // log(null, "START")

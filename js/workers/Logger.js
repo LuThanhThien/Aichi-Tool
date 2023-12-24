@@ -1,6 +1,6 @@
 var util = require('util');
 const fs = require('fs');
-const config = require('../config');
+const config = require('../configure/config');
 const path = require('path');
 const logPath = `./log/${config.DateCombined.thisDate}`;
 
@@ -32,10 +32,16 @@ function logger() {
       }
       log_stdout.write(util.format(d) + '\n')
    }
+   console.error = function(d,log=true) { //
+      if (log) {
+         log_file.write(util.format(d) + '\n')
+      }
+      log_stdout.write(util.format(d) + '\n')
+   }
 }
 
 // for logging info
-function logging(account=null, text=null, log=true) {
+function log(text=null, account=null, log=true) {
    const now = new Date();
    let dateString = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
 
@@ -51,6 +57,7 @@ function logging(account=null, text=null, log=true) {
       console.log(`[${dateString}] [MAIN]`, log);
    }
 }
+
 
 function cleanLog(n) {
    // keep only n latest log files (include current log file)
@@ -89,14 +96,8 @@ function initLogger(){
 
 module.exports = {
    logger,
-   logging,
+   log, 
    logPath,
    makeDir,
 }
-// console.log(`[${dateString}] [MAIN] [START]`)
 
-// module.exports = {
-//    DateComponents,
-//    DateCombined,
-//    logPath
-// }

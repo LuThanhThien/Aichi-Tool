@@ -1,11 +1,9 @@
 require('events').EventEmitter.defaultMaxListeners = 20
+const puppeteer = require('puppeteer-extra')
 const { program } = require('commander')
-const config = require('./js/config')
+const config = require('./js/configure/config')
+const dir = require('./js/configure/dir')
 const utils = require('./js/utils')
-const puppeteerExtra = require('puppeteer-extra')
-const Stealth = require('puppeteer-extra-plugin-stealth')
-
-puppeteerExtra.use(Stealth())
 
 // objects
 const formEliminator = require('./js/managers/FormInquery')
@@ -14,12 +12,20 @@ const accountManager = require('./js/managers/AccountManager')
 
 // workers 
 const logger = require('./js/workers/Logger')
-const Finder = require('./js/workers/Finder')
-const Accountor = require('./js/workers/Accountor')
-const Distributor = require('./js/workers/Distributor')
-const Taker = require('./js/workers/Taker')
-const Filler = require('./js/workers/Filler')
-const { log } = require('console')
+const Finder = require('./js/components/Finder')
+const Accountor = require('./js/components/Accountor')
+const Distributor = require('./js/components/Distributor')
+const Filler = require('./js/components/Filler')
+
+// html
+const OfferList = require('./js/html/OfferList')
+const Pipeline = require('./js/html/Pipeline')
+
+// new workers
+const FinderWorker = require('./js/workers/Finder')
+const GuardianWorker = require('./js/workers/Guardian')
+const DistributorWorker = require('./js/workers/Distributor')
+
 
 // init logger
 logger.logger()
@@ -37,8 +43,7 @@ async function tool(keyword='Hirabari',
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
-   logger.logging(null, 
-      `ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}`)   // start time
+   logger.log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
@@ -66,14 +71,14 @@ async function tool(keyword='Hirabari',
 
       // REALOAD DISPAGES
       if (reRun % 20 === 0 && reRun !== 0) {
-         logger.logging(loggedPages.account, `RELOAD ACCOUNT PAGES`, false)
+         logger.log(`RELOAD ACCOUNT PAGES`, loggedPages.account, false)
          await Promise.all(disPages.map(async (loggedPages, pageIndex) => {
             const thisPage = loggedPages.page
             let isReloadAccountPage = await utils.reloadPage(thisPage)
          }))
       }
       
-      let filledForms = formManager.importJSON(config.accountJSONPath) || {}   // store filled forms
+      let filledForms = formManager.importJSON(dir.out.json.accountList.path) || {}   // store filled forms
       // AUTO FILL FORMS
       failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test, multiForms)
 
@@ -87,7 +92,7 @@ async function tool(keyword='Hirabari',
       if (totalSuccess > 0) {
          console.log(`TOTAL SUCCESSFUL FORMS: ${totalSuccess}`)
       }
-      formManager.exportJSON(filledForms, config.accountJSONPath)
+      formManager.exportJSON(filledForms, dir.out.json.accountList.path)
       
       await new Promise(r => setTimeout(r, 1000))
 
@@ -95,7 +100,6 @@ async function tool(keyword='Hirabari',
       // if (maxRenit !== 0 && reRun >= maxRenit) { break }
    }
 }
-
 
 async function main(capture=false, reverseForms=false) {
    const keyword = "Tosan"
@@ -105,20 +109,17 @@ async function main(capture=false, reverseForms=false) {
 }
 
 async function test(){
-   const browserObj = await puppeteerExtra.launch( { headless: false } )
-  const newpage = await browserObj.newPage()
- 
-  await newpage.setViewport({ width: 1280, height: 720 })
-
-  await newpage.setUserAgent(
-    'Mozilla/5.0 (Windows NT 10.0 Win64 x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
-
-  await newpage.goto(config.mainUrl)
-  await newpage.waitForTimeout(20000) // Wait for 20 seconds
-
-  await newpage.screenshot({ path: './log/screenshot.png' })
-
-  await browserObj.close()
+   const mainBrowser = await puppeteer.launch({ headless: 'new' })
+   // let accountBrowsers = []
+   // for (let i=0; i<config.accounts.length; i++) {
+   //    const accountBrowser = await puppeteer.launch({ headless: false })
+   //    accountBrowsers.push(accountBrowser)
+   // }
+   await Promise.all([
+      FinderWorker(mainBrowser),
+      // GuardianWorker(accountBrowsers),
+      // DistributorWorker()
+   ])
 }
 
 program
@@ -136,6 +137,7 @@ program
 program.parse()
 
 const options = program.opts()
+
 // run
 if (options.tool === true) {
    let templateSeqs = []
@@ -159,8 +161,6 @@ else {
    let reverseForms = true
    main(capture, reverseForms)
 }
-
-
 
 
 // nexe app.js --build --verbose -t window

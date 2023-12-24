@@ -1,29 +1,45 @@
 const puppeteer = require('puppeteer')
-const config = require('../config')
+const config = require('../configure/config')
 const utils = require('../utils')
+const OfferList = require('../html/OfferList')
+const Pipeline = require('../html/Pipeline')
+const { Form } = require('../data/Forms')
 
+async function Finder(mainBrowser) {
+   const mainPage = await mainBrowser.newPage()
+   await mainPage.setViewport({ width: 1200, height: 800 })
+   let OfferListObj = new OfferList(
+      keyword=config.args.keyword, 
+      displayNumber=config.args.displayNumber, 
+      page=mainPage
+      )
+   let PipelineInit = new Pipeline()
+   let PipelineRenit = new Pipeline()
+   let PipelineMain = new Pipeline()
 
-// objects
-const formManager = require('../managers/FormManager')
-const logger = require('./Logger')
-
-
-async function Finder(keyword = 'Hirabari', isHeadless = false,  reverseForms=false, hidden=false, templateSeqs=[]) {
-   try {
-      const logPath = `${logger.logPath}`
-      const formBrowser = await puppeteer.launch({ headless: isHeadless })
-      const formPage = await formBrowser.newPage()
-      // await formPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
-      await formPage.goto(config.mainUrl)
-      await formPage.waitForTimeout(20000)
-      let listForms = await formManager.collector(formPage, keyword, config.displayNumber, reverseForms, hidden, templateSeqs)
-      formManager.exportJSON(listForms)
-      await formPage.screenshot({ path: `${logPath}/display.png`, fullPage: true })
-      return { listForms, formBrowser, formPage }
-   } catch (error) {
-      console.error(error)
-      return Finder(keyword, isHeadless, reverseForms)
-   }
+   let pipesInit = [
+      async () => await OfferListObj.filter({ verbose: true }),
+      async () => await OfferListObj.display({ verbose: true }),
+      async () => await OfferListObj.get({ verbose: true }),
+   ]
+   let pipesRenit = [
+      async () => { 
+         await utils.reloadPage(mainPage)
+         },
+      async () => await OfferListObj.get({ verbose: true }),
+      async () => OfferListObj.formList.toJSONFile(Form),
+      async () => await PipelineRenit.run(),
+   ]
+   
+   PipelineInit.addAll(pipesInit)
+   PipelineRenit.addAll(pipesRenit)
+   PipelineMain.addAll(
+      [
+         async () => await PipelineInit.run(),
+         async () => await PipelineRenit.run(),
+      ]
+   )
+   await PipelineMain.run()
 }
 
 module.exports = Finder
