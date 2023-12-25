@@ -31,8 +31,7 @@ function getRandomPhoneNumbers(mainPhoneNumber, phoneNumberArray, prob=0.4) {
 }
 
 async function distribute(loggedPages, accounts, keyword, maxForms=3) {
-   let prob = 0.4
-   if (keyword === 'Tosan') { prob = 0 }
+   let prob = (keyword === 'Tosan') ? 0 : 1
    let disPages = []                            // store distributed pages
    const numAccounts = accounts.length          // number of accounts
    for (i=0; i<numAccounts*maxForms; i++) {

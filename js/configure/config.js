@@ -36,8 +36,8 @@ const accounts = [
    // // TEST
    // { username: 'luthien5921@gmail.com', password: 'aichi@5921' },
    // { username: 'luthien5921+shinsei1@gmail.com', password: 'aichi@5921' },       
-   { username: 'luthien5921+shinsei2@gmail.com', password: 'aichi@5921' },       
-   { username: 'giathanh010101@gmail.com', password: 'aichi@5921'},   
+   // { username: 'luthien5921+shinsei2@gmail.com', password: 'aichi@5921' },       
+   // { username: 'giathanh010101@gmail.com', password: 'aichi@5921'},     
    // { username: 'piechipiechipeach@gmail.com', password: 'aichi@5921'},     
    // { username: 'piechipeach@gmail.com', password: 'aichi@5921'},     
    // { username: 'nqkhanhtoan@gmail.com', password: 'aichi@5921'},     
@@ -56,7 +56,7 @@ const accounts = [
    // TOSAN main
    // { username: 'nihahi50@gmail.com', password: 'hoahong1234' },
    { username: 'davidalaba00000@gmail.com', password: 'hoahong1234' },
-   // { username: 'ble79037@gmail.com', password: 'hoahong1234' },
+   { username: 'ble79037@gmail.com', password: 'hoahong1234' },
    // { username: 'benemmai380@gmail.com', password: 'hoahong1234' },
 ]
 
