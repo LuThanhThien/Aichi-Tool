@@ -38,12 +38,13 @@ async function tool(keyword='Hirabari',
                      reverseForms=false,
                      multiForms=false,
                      hidden=false,
-                     templateSeqs=[]) {
+                     templateSeqs=[],
+                     showCustomerData=false) {
    const accounts = config.accounts                                  // list of accounts
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
-   logger.log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}`)   // start time
+   logger.log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}, showCustomerData = ${showCustomerData}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
@@ -65,7 +66,7 @@ async function tool(keyword='Hirabari',
          disPages 
       ] = await Promise.all([
          formManager.finder(formPage, keyword, reverseForms, hidden, templateSeqs),  // re-find all available forms
-         Distributor(loggedPages, accounts, keyword, maxForms)       // distribute forms to accounts
+         Distributor(loggedPages, accounts, keyword, maxForms, showCustomerData, hidden)       // distribute forms to accounts
       ])
 
 
@@ -80,7 +81,7 @@ async function tool(keyword='Hirabari',
       
       let filledForms = formManager.importJSON(dir.out.json.accountList.path) || {}   // store filled forms
       // AUTO FILL FORMS
-      failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test, multiForms)
+      failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test, multiForms, hidden)
 
       // LOG FAILS AND SUCCESSFUL FORMS
       if (failStore.length > 0) {
@@ -134,6 +135,7 @@ program
    .option('--hidden')
    .option('--template-seqs <string>')
    .option('--multi-forms')
+   .option('--show-customer-data')
 program.parse()
 
 const options = program.opts()
@@ -147,7 +149,7 @@ if (options.tool === true) {
    catch (error) {
       console.log('Cannot parse templateSeqs')
    }
-   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, templateSeqs)
+   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, templateSeqs, options.showCustomerData)
 }
 else if (options.drop === true) {
    // console.log('Cannot perform this action in this version')
@@ -168,5 +170,6 @@ else {
 // node app --tool --keyword='GY' --capture
 // node app --tool --keyword='Hirabari' --capture --template-seqs "88006,88007,88008,88009,88010"
 // node app --tool --keyword='Hirabari' --capture
+// node app --tool --keyword='Hirabari' --capture --hidden -show-customer-data
 // node app --tool --keyword='Tosan' --capture
 

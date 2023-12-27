@@ -60,7 +60,7 @@ async function navigateTo(page, url, maxDepth=100) {
    while (retryCount < maxDepth || maxDepth == 0) {
          try {
             await page.goto(url)
-            logger.log(`Navigate to ${url} - SUCCESS`, false)
+            logger.log(`Navigate to ${url} - SUCCESS`, null, false)
             return true  // Exit the loop if navigating is successful
          } catch (err) {
             logger.log(`ERROR: Cannot navigate to ${url} - Retry ${retryCount + 1}/${maxDepth}`)

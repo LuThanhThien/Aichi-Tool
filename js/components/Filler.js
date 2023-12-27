@@ -7,7 +7,7 @@ const utils = require('../utils')
 const logger = require('../workers/Logger')
 const formManager = require('../managers/FormManager')
 
-module.exports = async function(disPages, listForms, filledForms={}, capture=false, test=false, multiForms=false) {
+module.exports = async function(disPages, listForms, filledForms={}, capture=false, test=false, multiForms=false, hidden=false) {
    let failStore = []                                                // store failed forms
    let totalSuccess = 0                                              // total successful forms
    await Promise.all(disPages.map(async (loggedPage, pageIndex) => {
@@ -55,11 +55,13 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
             }          
             else {
                filledForms[thisAccount.username].push(thisForm.title)
+               logger.log('Filled info: ' + JSON.stringify(thisInfo[totalForms-1]), thisAccount)
                totalForms--
                totalSuccess++
             }
             await newPage.close()
             n++
+            if (hidden == true && filledForms[thisAccount.username].length === config.customerData.length) { break }
          }
       }
       else {
@@ -80,6 +82,7 @@ module.exports = async function(disPages, listForms, filledForms={}, capture=fal
             }          
             else {
                filledForms[thisAccount.username].push(thisForm.title)
+               logger.log('Filled info: ' + JSON.stringify(thisInfo[totalForms-1]), thisAccount, false)
                totalForms--
                totalSuccess++
             }

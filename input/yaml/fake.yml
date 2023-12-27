@@ -9,6 +9,10 @@ lastName:
   - Phan
   - Vu
   - Dang
+  - Huong
+  - Bui
+  - Do
+  - Ho
 firstName:
   - Thuan Thien
   - Le Ly
@@ -22,6 +26,17 @@ firstName:
   - Thi Thanh
   - Thanh Thao
   - Thanh Nguyen
+  - Binh An
+  - Gia Bao
+  - Ngoc Anh
+  - Nhut Tan
+  - Khanh Toan
+  - Hoang Phuc
+  - Vinh Long
+  - An Giang
+  - Can Tho
+  - Tien Minh
+  - Thu Ha
 dateBirth:
   - '20010302'
   - '19940505'
@@ -36,6 +51,13 @@ dateBirth:
   - '19950409'
   - '20000312'
   - '20010905'
+  - '19980726'
+  - '19920620'
+  - '19981002'
+  - '20020505'
+  - '19950719'
+  - '19931112'
+  - '20011209'
 gender:
   - M
   - F
@@ -50,6 +72,11 @@ phoneNumber:
   - '0805678912'
   - '0802468135'
   - '0803692584'
+  - '0806543210'
+  - '0801112233'
+  - '0809998888'
+  - '0807774444'
+  - '0808885555'
 phoneNumberHash:
   - '080-1234-5673'
   - '080-9876-5435'
@@ -61,6 +88,11 @@ phoneNumberHash:
   - '080-5678-9121'
   - '080-2468-1355'
   - '080-3692-5840'
+  - '080-6543-2108'
+  - '080-1112-2330'
+  - '080-9998-8885'
+  - '080-7774-4440'
+  - '080-8885-5550'
 nation:
   - '151'
 country:
@@ -69,8 +101,16 @@ schoolName:
   - Katana
   - Samurai
   - Ninja
+  - Shogun
+  - Shinsengumi
+  - Katana
+  - Samurai
 prefacture:
   - 愛知県
+  - 青森県
+  - 秋田県
+  - 福井県
+  - 福岡県
 dateGrad:
   - '20231010'
   - '20230910'

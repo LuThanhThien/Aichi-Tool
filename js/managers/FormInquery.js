@@ -25,7 +25,7 @@ async function droper(capture=false) {
    }
    try {
       const accounts = config.accounts
-      await confirm('Delete All');
+      await confirm('drop');
       logger.log(`Deletion - BEGIN`)
       await Promise.all(accounts.map(async (account) => {
          if (config.testAccounts.includes(account.username)) {
@@ -50,11 +50,11 @@ async function droper(capture=false) {
 async function dropAll(page, account, capture=false) {
    
    await accountManager.logIn(page, account)                                                    // login
-   logger.log(account, "Login finished - BEGIN")
+   logger.log("Login finished - BEGIN", account)
 
    await page.goto(config.URLs.inqueryUrl)
    
-   logger.log(account, "Navigate to inquery page finished")
+   logger.log("Navigate to inquery page finished", account)
    if (capture) { await page.screenshot({path: `${logger.logPath}/${account.username}/inquery.png`, fullPage: true}) }
 
    // find all inquery forms
@@ -63,11 +63,11 @@ async function dropAll(page, account, capture=false) {
 
    // delete all inquery forms
    if (listItems.length == 0) {
-      logger.log(account, "No inquery form found - END")
+      logger.log("No inquery form found - END", account)
       return
    }
    else {
-      logger.log(account, `Found ${listItems.length} inquery forms`)
+      logger.log(`Found ${listItems.length} inquery forms`, account)
    }
 
    for (let i = 0; i < listItems.length; i++) {
@@ -84,7 +84,7 @@ async function dropAll(page, account, capture=false) {
       await page.evaluate(() => {
          document.querySelector(`input[id='delete']`).click();
       })
-      logger.log(account, `Inquery form [${i+1}] deleting`)
+      logger.log(`Inquery form [${i+1}] deleting`, account)
       await page.waitForNavigation()
 
       // confirm delete
@@ -99,7 +99,7 @@ async function dropAll(page, account, capture=false) {
       await page.waitForNavigation()
 
       if (capture) { await page.screenshot({path: `${logger.logPath}/${account.username}/inquery-done-${i+1}.png`, fullPage: true}) }
-      logger.log(account, `Inquery form [${i+1}] finished`)
+      logger.log(`Inquery form [${i+1}] finished`, account)
 
       // back to inquery page
       await page.goto(config.URLs.inqueryUrl)

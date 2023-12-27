@@ -30,25 +30,50 @@ function getRandomPhoneNumbers(mainPhoneNumber, phoneNumberArray, prob=0.4) {
    return result[0];
 }
 
-async function distribute(loggedPages, accounts, keyword, maxForms=3) {
+async function distribute(loggedPages, accounts, keyword, maxForms=3, showCustomerData=false, hidden=false) {
    let prob = (keyword === 'Tosan') ? 0 : 1
    let disPages = []                            // store distributed pages
    const numAccounts = accounts.length          // number of accounts
-   for (i=0; i<numAccounts*maxForms; i++) {
-      let info = i < config.customerData.length ? config.customerData[i] : generate(prob);
-      let j = i % numAccounts
-      if (i < numAccounts) {
-         disPages.push({
-            account: loggedPages[j].account,
-            browser: loggedPages[j].browser, 
-            page: loggedPages[j].page, 
-            isAvailable: loggedPages[j].isAvailable, 
-            info: [info],
-         })
+   if (hidden === true && keyword === 'Hirabari') {
+      for (i=0; i<config.customerData.length; i++) {
+         for (j=0; j<numAccounts; j++) {
+            disPages.push({
+               account: loggedPages[j].account,
+               browser: loggedPages[j].browser, 
+               page: loggedPages[j].page, 
+               isAvailable: loggedPages[j].isAvailable, 
+               info: [config.customerData[i]],
+            })
+         }
       }
-      else {
-         disPages[j].info.push(info)
+   }
+   else {
+      for (i=0; i<numAccounts*maxForms; i++) {
+         let info = i < config.customerData.length ? config.customerData[i] : generate(prob);
+         let j = i % numAccounts
+         if (i < numAccounts) {
+            disPages.push({
+               account: loggedPages[j].account,
+               browser: loggedPages[j].browser, 
+               page: loggedPages[j].page, 
+               isAvailable: loggedPages[j].isAvailable, 
+               info: [info],
+            })
+         }
+         else {
+            disPages[j].info.push(info)
+         }
       }
+   }
+
+   if (showCustomerData == true) {
+      for (page of disPages) {
+         logger.log('Customer data:', page.account)
+         for (info of page.info) {
+            console.log(JSON.stringify(info))
+         }
+      }
+      console.log('Total real customers: ' + config.customerData.length)
    }
    // logger.log(`Distributed ${disPages.length} pages to accounts`)
    return disPages
