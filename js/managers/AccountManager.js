@@ -41,12 +41,12 @@ async function logIn(page, account, depth=0, maxDepth=10) {
       }
       catch (err) {
          // retry to login for maxDepth time, maxDepth = 0 means infinite
-         logger.logging(account, `ERROR: Cannot login, retry time <${depth}>...`)
+         logger.log(`ERROR: Cannot login, retry time <${depth}>...`, account)
          if (depth < maxDepth || maxDepth == 0) {
             return await logIn(page, account, depth+1)
          }
          else {
-            logger.logging(account, `ERROR: Cannot login`)      
+            logger.log(`ERROR: Cannot login`, account)      
             return false
          }
       }
@@ -65,7 +65,7 @@ async function accountFormsInquery(page, account) {
       console.log(listItems)
    }
    catch (err) {
-      logger.logging(account, `ERROR: Cannot navigate to inquery page`)
+      logger.log(`ERROR: Cannot navigate to inquery page`, account)
       return false
    }
 
@@ -73,7 +73,7 @@ async function accountFormsInquery(page, account) {
    const formListHTML = "div[class='formList']"
    const formList = await page.$$(formListHTML)
    const formListLength = formList.length
-   logger.logging(account, `Found ${formListLength} forms`)
+   logger.log(`Found ${formListLength} forms`, account)
    return formList
 }
 

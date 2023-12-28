@@ -94,29 +94,32 @@ async function finder(page, keyword=config.args.keyword, reverseForms=false, hid
          })
       }, selectors, utils.isPast.toString(), utils.stringToDate.toString())
 
-      let availableItem = array // take all forms                       
+      
+      
+      let availableItem = array // take all forms     
+
       if (keyword != null && keyword != '') {
          availableItem = availableItem.filter(item => item.title.includes(keyword))    // deep-filter with exact keyword
       }
-      
-      availableItem = availableItem.sort(customSort)                                      // sort by date
-      if (hidden === true) { // using for hidden Hiraibari forms
-         availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
-         availableItem = availableItem.filter(item => !item.title.includes('<'))
-      }
-      // const aboutToClose = "もうすぐ終了"
-      // const upcomingStatus = "近日受付開始"
-      const passedStatus = "受付終了しました" 
-      const endedStatus = "終了しました"
-      availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
-      availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
-      
-      
+
       if (templateSeqs.length > 0) { 
          console.log(templateSeqs)
          availableItem = availableItem.filter(item => templateSeqs.includes(item.templateSeq)) // filter by templateSeqs
+         availableItem = availableItem.filter(item => item.isAvailable === true)
       }       
-
+      else {
+         availableItem = availableItem.sort(customSort)                                      // sort by date
+         if (hidden === true) { // using for hidden Hiraibari forms
+            availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
+            availableItem = availableItem.filter(item => !item.title.includes('<'))
+         }
+         // const aboutToClose = "もうすぐ終了"
+         // const upcomingStatus = "近日受付開始"
+         const passedStatus = "受付終了しました" 
+         const endedStatus = "終了しました"
+         availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
+         availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
+      }
 
       let closest = Infinity
       for (item in availableItem) {

@@ -69,7 +69,6 @@ async function tool(keyword='Hirabari',
          Distributor(loggedPages, accounts, keyword, maxForms, showCustomerData, hidden)       // distribute forms to accounts
       ])
 
-
       // REALOAD DISPAGES
       if (reRun % 20 === 0 && reRun !== 0) {
          logger.log(`RELOAD ACCOUNT PAGES`, loggedPages.account, false)
@@ -78,7 +77,7 @@ async function tool(keyword='Hirabari',
             let isReloadAccountPage = await utils.reloadPage(thisPage)
          }))
       }
-      
+
       let filledForms = formManager.importJSON(dir.out.json.accountList.path) || {}   // store filled forms
       // AUTO FILL FORMS
       failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test, multiForms, hidden)
@@ -106,7 +105,14 @@ async function main(capture=false, reverseForms=false) {
    const keyword = "Tosan"
    const headless = false
    const maxRenit = 0
-   tool(keyword, headless, capture, maxRenit, reverseForms)
+   tool(keyword, headless, capture, maxRenit, reverseForms, false, false, [], true)
+}
+
+async function onday(capture=false, reverseForms=false) {
+   const keyword = "Hirabari"
+   const headless = false
+   const maxRenit = 0
+   tool(keyword, headless, capture, maxRenit, reverseForms, false, true, [], true)
 }
 
 async function test(){
@@ -127,6 +133,7 @@ program
    .option('--drop')
    .option('--tool')
    .option('--test')
+   .option('--onday')
    .option('--keyword <string>')
    .option('--max-renit <number>')
    .option('--reverse-forms')
@@ -142,12 +149,12 @@ const options = program.opts()
 
 // run
 if (options.tool === true) {
-   let templateSeqs = []
+   let templateSeqs = options.templateSeqs
    try {
       let templateSeqs = JSON.parse("[" + options.templateSeqs + "]")
    }
    catch (error) {
-      console.log('Cannot parse templateSeqs')
+      console.log('Cannot parse templateSeqs or templateSeqs is empty')
    }
    tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, templateSeqs, options.showCustomerData)
 }
@@ -158,10 +165,13 @@ else if (options.drop === true) {
 else if (options.test === true) {
    test()
 }
+else if (options.onday === true) {
+   let capture = true
+   onday(capture, options.reverseForms)
+}
 else {
    let capture = true
-   let reverseForms = true
-   main(capture, reverseForms)
+   main(capture, options.reverseForms)
 }
 
 
@@ -170,6 +180,6 @@ else {
 // node app --tool --keyword='GY' --capture
 // node app --tool --keyword='Hirabari' --capture --template-seqs "88006,88007,88008,88009,88010"
 // node app --tool --keyword='Hirabari' --capture
-// node app --tool --keyword='Hirabari' --capture --hidden -show-customer-data
+// node app --tool --keyword='Hirabari' --capture --hidden --show-customer-data
 // node app --tool --keyword='Tosan' --capture
 
