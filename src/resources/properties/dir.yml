@@ -1,0 +1,17 @@
+input:
+  csv:
+    countries.csv
+    customers.csv
+    nations.csv
+  txt:
+    countries.txt
+    customers.txt
+    nations.txt
+  yaml:
+    args.yml
+    fake.yml
+out:
+  json:
+    accountList.json
+    formList.json
+    formStatus.json

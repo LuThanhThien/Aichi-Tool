@@ -1,34 +1,29 @@
-require('events').EventEmitter.defaultMaxListeners = 20
-const puppeteer = require('puppeteer-extra')
-const { program } = require('commander')
-const config = require('./js/configure/config')
-const dir = require('./js/configure/dir')
-const utils = require('./js/utils')
+import puppeteer from 'puppeteer-extra'
+import { program } from 'commander'
+import config from './src/resources/static/config.js'
+import dir from './src/resources/static/dir.js'
+import utils from './src/utils.js'
 
 // objects
-const formEliminator = require('./js/managers/FormInquery')
-const formManager = require('./js/managers/FormManager')
-const accountManager = require('./js/managers/AccountManager')
+import formEliminator from './src/managers/FormInquery.js'
+import formManager from './src/managers/FormManager.js'
 
 // workers 
-const logger = require('./js/workers/Logger')
-const Finder = require('./js/components/Finder')
-const Accountor = require('./js/components/Accountor')
-const Distributor = require('./js/components/Distributor')
-const Filler = require('./js/components/Filler')
+import { logger as _logger, log } from './src/log.js'
+import Finder from './src/components/Finder.js'
+import Accountor from './src/components/Accountor.js'
+import Distributor from './src/components/Distributor.js'
+import Filler from './src/components/Filler.js'
 
 // html
-const OfferList = require('./js/html/OfferList')
-const Pipeline = require('./js/html/Pipeline')
+import ProxyBrowser from './src/main/html/ProxyPuppeteer.js'
 
 // new workers
-const FinderWorker = require('./js/workers/Finder')
-const GuardianWorker = require('./js/workers/Guardian')
-const DistributorWorker = require('./js/workers/Distributor')
+import FinderWorker from './src/main/workers/Finder.js'
 
 
 // init logger
-logger.logger()
+_logger()
 
 // tool
 async function tool(keyword='Hirabari', 
@@ -44,11 +39,11 @@ async function tool(keyword='Hirabari',
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
-   logger.log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}, showCustomerData = ${showCustomerData}`)   // start time
+   log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}, showCustomerData = ${showCustomerData}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
-      { listForms, formBrowser, formPage },
+      { listForms, formPage },
       loggedPages
    ] = await Promise.all([
       Finder(keyword, 'new', reverseForms, hidden, templateSeqs),                // find all available forms
@@ -71,10 +66,8 @@ async function tool(keyword='Hirabari',
 
       // REALOAD DISPAGES
       if (reRun % 20 === 0 && reRun !== 0) {
-         logger.log(`RELOAD ACCOUNT PAGES`, loggedPages.account, false)
-         await Promise.all(disPages.map(async (loggedPages, pageIndex) => {
-            const thisPage = loggedPages.page
-            let isReloadAccountPage = await utils.reloadPage(thisPage)
+         log(`RELOAD ACCOUNT PAGES`, loggedPages.account, false)
+         await Promise.all(disPages.map(async () => {
          }))
       }
 
@@ -116,7 +109,12 @@ async function onday(capture=false, reverseForms=false) {
 }
 
 async function test(){
-   const mainBrowser = await puppeteer.launch({ headless: 'new' })
+
+   // Launch Puppeteer with proxy
+   const mainBrowser = await utils.proxyBrowser({ headless: false })
+
+   
+   // const mainBrowser = await puppeteer.launch({ headless: false })
    // let accountBrowsers = []
    // for (let i=0; i<config.accounts.length; i++) {
    //    const accountBrowser = await puppeteer.launch({ headless: false })
@@ -151,7 +149,6 @@ const options = program.opts()
 if (options.tool === true) {
    let templateSeqs = options.templateSeqs
    try {
-      let templateSeqs = JSON.parse("[" + options.templateSeqs + "]")
    }
    catch (error) {
       console.log('Cannot parse templateSeqs or templateSeqs is empty')

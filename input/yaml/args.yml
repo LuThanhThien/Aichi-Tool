@@ -2,3 +2,11 @@ keyword: Tosan
 displayNumber: 50
 verbose: true
 mainPhoneNumberHash: 080-1583-0891
+proxy:
+  version: 6
+  ip: 2001:19f0:7001:4f6:1d3a:47db:09de:3fee
+  host: 45.32.56.105
+  port: 11892
+  user: 6ZZbNK
+  pass: BTcpWD
+  type: http
