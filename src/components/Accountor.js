@@ -1,4 +1,4 @@
-import ProxyPuppeteer from '../main/html/ProxyPuppeteer.js'
+import ProxyPuppeteer from '../main/lib/ProxyPuppeteer.js'
 import { log } from '../log.js'
 import formManager from '../managers/AccountManager.js'
 

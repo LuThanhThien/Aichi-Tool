@@ -1,10 +1,12 @@
-import map from '../../resources/static/map.js'
+import map from '../../configure/map.js'
 import utils from '../../utils.js'
 import {log } from '../../log.js'
 
+
 class DataList extends Array {
-   constructor() {
+   constructor(Objects=[]) {
       super()
+      // this.push(...Objects)
    }
 
    /**

@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer'
-import { Account } from '../data/Account.js'
-import { URLs } from '../../resources/static/config.js'
+import Account from '../domain/Account.js'
+import config from '../../configure/config.js'
 import { log as _log } from '../../log.js'
 
 
@@ -8,7 +8,7 @@ class Login {
    /**
    * @param {puppeteer.Browser} browser
    * @param {puppeteer.Page} page
-   * @param {Account} account
+   * @param {Account.Account} account
    */
    constructor(browser, page, account) {
       this.browser = browser
@@ -22,7 +22,7 @@ class Login {
 
    async login(options = { verbose: false }) {
       try {
-         await this.page.goto(URLs.logInUrl)
+         await this.page.goto(config.URLs.logInUrl)
          await this.page.focus(this.selectors.username)
          await this.page.keyboard.type(this.account.username)
          await this.page.focus(this.selectors.password)

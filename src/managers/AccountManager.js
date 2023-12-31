@@ -1,4 +1,4 @@
-import config from '../resources/static/config.js'
+import config from '../configure/config.js'
 import { log } from '../log.js'
 import formManager from './FormManager.js'
 

@@ -1,6 +1,5 @@
-import { Form, FormList } from './Form.js'
-import utils from '../../utils.js'
-import dir from '../../resources/static/dir.js'
+import DataList from './DataList.js'
+import Form from './Form.js'
 
 class Account {
    constructor(username, password) {
@@ -8,7 +7,7 @@ class Account {
       this.password = password
       this.isLogin = false
       this.busy = false
-      this.forms = new FormList()
+      this.forms = new DataList
    }
 
    get_username() {
@@ -67,45 +66,4 @@ class Account {
 
 }
 
-class AccountList extends Array{
-   constructor() {
-      super()
-   }
-
-   /**
-    * @param {Account} account
-    */
-   add(account) {
-      this.push(account)
-   }
-
-   /**
-    * @param {Array<Account>} accounts
-    */
-   addAll(accounts) {
-      this.push(...accounts)
-   }
-
-   getAvailable() {
-      return this.filter(account => account.isLogin && !account.busy)
-   }
-
-   getBusy() {
-      return this.filter(account => account.busy)
-   }
-
-   getLogin() {
-      return this.filter(account => account.isLogin)
-   }
-
-   getLogout() {
-      return this.filter(account => !account.isLogin)
-   }
-
-   toJSONFile() {
-      utils.exportJSON(this, dir.out.json.accountList.path)
-   }
-
-}
-
-export default { Account, AccountList }
+export default Account

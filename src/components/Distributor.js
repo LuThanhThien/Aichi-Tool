@@ -1,4 +1,4 @@
-import config from '../resources/static/config.js';
+import config from '../configure/config.js';
 import { log as _log } from '../log.js';
 const fake = config.fake
 const args = config.args

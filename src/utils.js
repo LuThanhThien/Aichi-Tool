@@ -1,5 +1,5 @@
-import config from './resources/static/config.js'
-import dir from './resources/static/dir.js'
+import config from './configure/config.js'
+import dir from './configure/dir.js'
 import { writeFileSync, writeFile, readFileSync } from 'fs'
 import { log } from './log.js'
 
@@ -120,29 +120,38 @@ function exportJSON(disForms, path=dir.out.json.OfferList) {
    // logger.log("JSON data has been written to " + path)
 }
 
-function importJSON(path=dir.out.json.OfferList) {
+function importJSON(path=dir.out.jsonFormList) {
    try {
       const jsonString = readFileSync(path, 'utf8')
-      const jsonObject = JSON.parse(jsonString)
+      const jsonObject = JSON.parse(jsonString) 
       // logger.log('Received JSON file successfully')
-      return 
+      return jsonObject
    }
    catch(err) {
       log('ERROR: Cannot read JSON file or JSON file is empty')
-      console.error(err)
-      return {}
+      // console.error(err)
+      return []
    }
 }
 
 
-
+function exists(path) {
+   try {
+     // Check if the file or folder exists
+     fs.accessSync(path);
+     return true;
+   } catch (err) {
+     // The file or folder does not exist
+     return false;
+   }
+ }
 
 export default {
    redirectMain,
    captureHTML,
    reloadPage, navigateTo,
    stringToDate, isPast, getJSTDateTime,
-   exportJSON, importJSON,
+   exportJSON, importJSON, exists,
  }
 
  

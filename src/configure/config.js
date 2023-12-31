@@ -34,7 +34,7 @@ let DateCombined = {
 const testAccounts = ['luthien5921@gmail.com', 'luthien5921+shinsei1@gmail.com', 'luthien5921+shinsei2@gmail.com', 'giathanh010101@gmail.com', 'piechipiechipeach@gmail.com', 'piechipiechipeach@gmail.com', 'piechipeach@gmail.com', 'nqkhanhtoan@gmail.com']
 const accounts = [
    // // TEST
-   { username: 'luthien5921@gmail.com', password: 'aichi@5921' },
+   // { username: 'luthien5921@gmail.com', password: 'aichi@5921' },
    { username: 'luthien5921+shinsei1@gmail.com', password: 'aichi@5921' },       
    // { username: 'luthien5921+shinsei2@gmail.com', password: 'aichi@5921' },       
    // { username: 'giathanh010101@gmail.com', password: 'aichi@5921'},     
@@ -63,9 +63,9 @@ const accounts = [
 
 // INPUT 
 const columns = ["firstName","lastName","dateBirth","gender","nation","country","phoneNumberHash"]
-const customerData = _load_csv(dir.input.csv.customers.path)
-const args = _load_yaml(readFileSync(dir.input.yaml.args.path), 'utf8')
-const fake = _load_yaml(readFileSync(dir.input.yaml.fake.path), 'utf8')
+const customerData = _load_csv(dir.input.csvCustomers)
+const args = _load_yaml(readFileSync(dir.input.yamlArgs), 'utf8')
+const fake = _load_yaml(readFileSync(dir.input.yamlFake), 'utf8')
 const proxyServer = `${args.proxy.host}:${args.proxy.port}`;
 
 

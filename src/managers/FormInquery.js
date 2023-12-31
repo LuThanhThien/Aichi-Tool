@@ -1,7 +1,7 @@
 
-import config from '../resources/static/config.js'
+import config from '../configure/config.js'
 import { log, logPath } from '../log.js'
-import ProxyPuppeteer from '../main/html/ProxyPuppeteer.js'
+import ProxyPuppeteer from '../main/lib/ProxyPuppeteer.js'
 import accountManager from './AccountManager.js'
 import formManager from './FormManager.js'
 

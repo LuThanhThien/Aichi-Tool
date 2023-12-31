@@ -1,7 +1,6 @@
-import puppeteer from 'puppeteer-extra'
 import { program } from 'commander'
-import config from './src/resources/static/config.js'
-import dir from './src/resources/static/dir.js'
+import config from './src/configure/config.js'
+import dir from './src/configure/dir.js'
 import utils from './src/utils.js'
 
 // objects
@@ -15,11 +14,16 @@ import Accountor from './src/components/Accountor.js'
 import Distributor from './src/components/Distributor.js'
 import Filler from './src/components/Filler.js'
 
-// html
-import ProxyBrowser from './src/main/html/ProxyPuppeteer.js'
+// lib
+import ProxyBrowser from './src/main/lib/ProxyPuppeteer.js'
+import Pipeline from './src/main/lib/Pipeline.js'
+import Pipes from './src/main/lib/Pipes.js'
 
 // new workers
 import FinderWorker from './src/main/workers/Finder.js'
+import GuardianWorker from './src/main/workers/Guardian.js'
+import DistributorWorker from './src/main/workers/Distributor.js'
+import init from './src/init.js'
 
 
 // init logger
@@ -71,7 +75,7 @@ async function tool(keyword='Hirabari',
          }))
       }
 
-      let filledForms = formManager.importJSON(dir.out.json.accountList.path) || {}   // store filled forms
+      let filledForms = formManager.importJSON(dir.out.jsonAccountList) || {}   // store filled forms
       // AUTO FILL FORMS
       failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test, multiForms, hidden)
 
@@ -85,7 +89,7 @@ async function tool(keyword='Hirabari',
       if (totalSuccess > 0) {
          console.log(`TOTAL SUCCESSFUL FORMS: ${totalSuccess}`)
       }
-      formManager.exportJSON(filledForms, dir.out.json.accountList.path)
+      formManager.exportJSON(filledForms, dir.out.jsonAccountList)
       
       await new Promise(r => setTimeout(r, 1000))
 
@@ -110,21 +114,23 @@ async function onday(capture=false, reverseForms=false) {
 
 async function test(){
 
-   // Launch Puppeteer with proxy
-   const mainBrowser = await utils.proxyBrowser({ headless: false })
+   let finderBrowser = await new ProxyBrowser().newBrowser({ headless: 'new' })
+   let accountBrowsers = []
+   for (let i=0; i<config.accounts.length; i++) {
+      const accountBrowser = await new ProxyBrowser().newBrowser({ headless: false })
+      accountBrowsers.push(accountBrowser)
+   }
 
-   
-   // const mainBrowser = await puppeteer.launch({ headless: false })
-   // let accountBrowsers = []
-   // for (let i=0; i<config.accounts.length; i++) {
-   //    const accountBrowser = await puppeteer.launch({ headless: false })
-   //    accountBrowsers.push(accountBrowser)
-   // }
-   await Promise.all([
-      FinderWorker(mainBrowser),
-      // GuardianWorker(accountBrowsers),
-      // DistributorWorker()
-   ])
+   new Pipeline.Pipeline([
+      async () => init(),
+      async () => 
+         await Promise.all([
+            GuardianWorker(accountBrowsers),
+            FinderWorker(finderBrowser),
+            DistributorWorker(),
+         ]),
+      ]).run()
+
 }
 
 program

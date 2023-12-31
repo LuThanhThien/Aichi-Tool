@@ -1,24 +1,25 @@
-import { accounts } from '../../resources/static/config.js'
+import config from '../../configure/config.js'
+import { Browser } from 'puppeteer'
 import UserLogin from '../../main/html/UserLogin.js'
-import { Account, AccountList } from '../../main/data/Account.js'
-import Pipeline from '../../main/html/Pipeline.js'
+import Account from '../domain/Account.js'
+import DataList from '../domain/DataList.js'
+import Pipeline from '../../main/lib/Pipeline.js'
+import Pipes from '../../main/lib/Pipes.js'
 
+
+/**
+ * @param {Browser} accountBrowsers
+ * @returns {Promise<void>}
+ */
 async function Guardian(accountBrowsers) {                                                                                  
-   const accountList = new AccountList()
+   const accountList = new DataList()
 
-   const PipelineInit = new Pipeline()
-   const PipelineRenit = new Pipeline()
-   const PipelineMain = new Pipeline()
-
-   const pipesInit = [
+   const PipelineMain = new Pipeline.Pipeline()
+   let pipes = new Pipes([
       async () => {
-      accountList.addAll(
-            accounts.map(account => new Account(account.username, account.password))
-         )
-         accountList.toJSONFile()
-      }
-   ]  
-   const pipesRenit = [
+         accountList.addAll( config.accounts.map(account => new Account(account.username, account.password)) )
+         accountList.toJSONFile(Account)
+      },
       async () => 
          await Promise.all(
             accountList.map(async (account, i) => {
@@ -26,19 +27,12 @@ async function Guardian(accountBrowsers) {
                await accountPage.setViewport({ width: 1200, height: 800 })
                const userLogin = new UserLogin(accountBrowsers[i], accountPage, account)
                await userLogin.login()
-               accountList.toJSONFile()
+               accountList.toJSONFile(Account)
             })
          ),
-   ]
-   const pipesMain = [
-      async () => await PipelineInit.run(),
-      async () => await PipelineRenit.run(),
-   ]
+   ])
 
-   PipelineInit.addAll(pipesInit)
-   PipelineRenit.addAll(pipesRenit)
-   PipelineMain.addAll(pipesMain)
-
+   PipelineMain.addAll(pipes)
    await PipelineMain.run()
 }
 

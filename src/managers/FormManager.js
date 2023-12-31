@@ -1,7 +1,7 @@
 // Description: This file contains the functions that are used to manage the forms.
 import { writeFile, readFileSync } from 'fs'  
-import config from '../resources/static/config.js'
-import dir from '../resources/static/dir.js'
+import config from '../configure/config.js'
+import dir from '../configure/dir.js'
 import utils from '../utils.js'
 import { log as _log, logPath as _logPath } from '../log.js'
 import 'fs'
@@ -191,18 +191,25 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
    // console.log(imgName)
 
    // check if form is available
-   let isAvailable = await checkAvailability(newPage, account, form, i)
-   // if (isAvailable === 'passed') { return false }
-   while (isAvailable === 'upcoming' || isAvailable === 'passed') {
-      // await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })    // reload page
-      isAvailable = await checkAvailability(newPage, account, form, i)
+   try {
+      let isAvailable = await checkAvailability(newPage, account, form, i)
       // if (isAvailable === 'passed') { return false }
-      if (isAvailable === 'available') { break }
-      else if (retry >= maxRetry && maxRetry != 0) {
-         _log(`Exceed max retry form [${i+1}]`, account)
-         return false
+      while (isAvailable === 'upcoming' || isAvailable === 'passed') {
+         await newPage.reload({ waitUntil: ["networkidle0", "domcontentloaded"] })    // reload page
+         isAvailable = await checkAvailability(newPage, account, form, i)
+         // if (isAvailable === 'passed') { return false }
+         if (isAvailable === 'available') { break }
+         else if (retry >= maxRetry && maxRetry != 0) {
+            _log(`Exceed max retry form [${i+1}]`, account)
+            return false
+         }
+         retry++
       }
-      retry++
+   }
+   catch (err) {
+      _log(`ERROR FORM [${i+1}]: Cannot check availability`, account)
+      console.log(err)
+      return false
    }
    
    // 1. click agree, go to form link
@@ -387,7 +394,7 @@ async function findInqueryForms(page) {
 
 
 // API for interact between workers
-function exportJSON(disForms, path=dir.out.json.formList.path) {
+function exportJSON(disForms, path=dir.out.jsonFormList) {
    let json = JSON.stringify(disForms, null, 2) // The third argument (2) is for indentation
    writeFile(path, json, 'utf8', (err) => {
       if (err) {
@@ -398,7 +405,7 @@ function exportJSON(disForms, path=dir.out.json.formList.path) {
    // logger.log("JSON data has been written to " + path)
 }
 
-function importJSON(path=dir.out.json.formList.path) {
+function importJSON(path=dir.out.jsonFormList) {
    try {
       const jsonString = readFileSync(path, 'utf8')
       const jsonObject = JSON.parse(jsonString)
@@ -412,7 +419,7 @@ function importJSON(path=dir.out.json.formList.path) {
    }
 }
 
-function checkJSON(newJSONObj, path=dir.outjson.formList.path) {
+function checkJSON(newJSONObj, path=dir.out.jsonFormList) {
    try {
       const oldJSONObj = importJSON(path)
       for (let i = 0 ; i < oldJSONObj.length ; i++) {

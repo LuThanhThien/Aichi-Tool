@@ -1,5 +1,5 @@
 import puppeteer, { Browser } from 'puppeteer'
-import config from '../../resources/static/config.js'
+import config from '../../configure/config.js'
 
 class ProxyPuppeteer {
    constructor() {

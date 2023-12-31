@@ -1,5 +1,5 @@
-import ProxyPuppeteer from '../main/html/ProxyPuppeteer.js'
-import config from '../resources/static/config.js'
+import ProxyPuppeteer from '../main/lib/ProxyPuppeteer.js'
+import config from '../configure/config.js'
 
 
 // objects

@@ -1,6 +1,6 @@
 import { format } from 'util';
 import { existsSync, mkdirSync, createWriteStream, readdir, statSync, unlink } from 'fs';
-import config from './resources/static/config.js';
+import config from './configure/config.js';
 import { join } from 'path';
 const logPath = `./log/${config.DateCombined.thisDate}`;
 

@@ -1,9 +1,9 @@
 import puppeteer from 'puppeteer'
-import config from '../../resources/static/config.js'
+import config from '../../configure/config.js'
 import { log } from '../../log.js'
 import utils from '../../utils.js'
-import Forms from '../data/Forms.js'
-import DataList from '../data/DataList.js'
+import Form from '../domain/Form.js'
+import DataList from '../domain/DataList.js'
 
 class OfferList {
    /**
@@ -123,7 +123,7 @@ class OfferList {
 
          this.formList.replaceAll(
             formsData.map(data => 
-               new Forms.Form(
+               new Form(
                   data.title,
                   data.status,
                   data.startDate,
