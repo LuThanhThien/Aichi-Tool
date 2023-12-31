@@ -6,18 +6,24 @@ import Pipes from '../lib/Pipes.js'
 import DataList from '../domain/DataList.js'
 import { log } from '../../log.js'
 
+async function distribute(formList, accountList) {
+
+}
+
 async function Distributor() {
    let forms = []
    const formStatusList = new DataList()
-   let pipeline = new Pipeline.Pipeline()
+   let formStatusPipeLine = new Pipeline.Pipeline( )
+
    let pipes = new Pipes([
       async () => { forms = utils.importJSON(dir.out.jsonFormList) },
       async () => formStatusList.replaceAll(forms.map(form => new FormStatus(form))) ,
       async () => formStatusList.toJSONFile(FormStatus),
       new Pipeline.Recurrence(),
    ])
-   pipeline.addAll(pipes)
-   await pipeline.run()
+
+   formStatusPipeLine.addAll(pipes)
+   await formStatusPipeLine.run()
 }
 
 export default Distributor

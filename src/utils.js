@@ -146,12 +146,17 @@ function exists(path) {
    }
  }
 
+function randomChoice(array) {
+   return array[Math.random() * array.length | 0]
+}
+
 export default {
    redirectMain,
    captureHTML,
    reloadPage, navigateTo,
    stringToDate, isPast, getJSTDateTime,
    exportJSON, importJSON, exists,
+   randomChoice,
  }
 
  

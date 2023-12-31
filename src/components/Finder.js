@@ -5,12 +5,13 @@ import config from '../configure/config.js'
 // objects
 import formManager from '../managers/FormManager.js'
 import { logPath as _logPath } from '../log.js'
+import puppeteer from 'puppeteer'
 
 
-async function Finder(keyword = 'Hirabari', isHeadless = false,  reverseForms=false, hidden=false, templateSeqs=[]) {
+async function Finder(keyword = 'Hirabari', isHeadless = false,  reverseForms=false, hidden=false, templateSeqs=[], proxy=true) {
    try {
       const logPath = `${_logPath}`
-      const formBrowser = await new ProxyPuppeteer().newBrowser({ headless: isHeadless })
+      const formBrowser = await new ProxyPuppeteer(proxy).newBrowser({ headless: isHeadless })
       const formPage = await formBrowser.newPage()
       // await formPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36')
       await formPage.goto(config.URLs.mainUrl)

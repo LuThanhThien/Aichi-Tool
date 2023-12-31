@@ -4,6 +4,9 @@ import {log } from '../../log.js'
 
 
 class DataList extends Array {
+   /**
+    * @param {Array<Object>} Objects 
+    */
    constructor(Objects=[]) {
       super()
       // this.push(...Objects)
@@ -32,23 +35,23 @@ class DataList extends Array {
    }
 
    /**
-    * @param {String} field
-    * @param {String} value
+    * @param {string} field
+    * @param {string} value
     */
    filterExact(field, value) {
       return this.filter(Data => Data[field] == value)
    }
 
    /**
-    * @param {String} field
-    * @param {String} value
+    * @param {string} field
+    * @param {string} value
     */
    filterInclude(field, value) {
       return this.filter(Data => Data[field].includes(value))
    }
 
    /**
-    * @param {String} field
+    * @param {string} field
     * @param {Array<String>} values
     */
    filterAll(field, values) {

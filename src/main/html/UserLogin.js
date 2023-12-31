@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer'
+import { Browser, Page } from 'puppeteer'
 import Account from '../domain/Account.js'
 import config from '../../configure/config.js'
 import { log as _log } from '../../log.js'
@@ -6,9 +6,9 @@ import { log as _log } from '../../log.js'
 
 class Login {
    /**
-   * @param {puppeteer.Browser} browser
-   * @param {puppeteer.Page} page
-   * @param {Account.Account} account
+   * @param {Browser} browser
+   * @param {Page} page
+   * @param {Account} account
    */
    constructor(browser, page, account) {
       this.browser = browser
@@ -29,7 +29,7 @@ class Login {
          await this.page.keyboard.type(this.account.password)
          await this.page.keyboard.press('Enter')
          await this.page.waitForNavigation()
-         this.account.set_isLogin(true)
+         this.account.isLogin = true
          if (options.verbose) { _log(`Log in account ${this.account.username} finished`) }
       }
       catch (err) {

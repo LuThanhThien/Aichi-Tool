@@ -24,6 +24,7 @@ import FinderWorker from './src/main/workers/Finder.js'
 import GuardianWorker from './src/main/workers/Guardian.js'
 import DistributorWorker from './src/main/workers/Distributor.js'
 import init from './src/init.js'
+import puppeteer from 'puppeteer'
 
 
 // init logger
@@ -38,20 +39,21 @@ async function tool(keyword='Hirabari',
                      multiForms=false,
                      hidden=false,
                      templateSeqs=[],
-                     showCustomerData=false) {
+                     showCustomerData=false,
+                     proxy=false) {
    const accounts = config.accounts                                  // list of accounts
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
-   log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}, showCustomerData = ${showCustomerData}`)   // start time
+   log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}, showCustomerData = ${showCustomerData}, proxy = ${proxy}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
       { listForms, formPage },
       loggedPages
    ] = await Promise.all([
-      Finder(keyword, 'new', reverseForms, hidden, templateSeqs),                // find all available forms
-      Accountor(accounts, isHeadless)        // login all accounts
+      Finder(keyword, 'new', reverseForms, hidden, templateSeqs, proxy),                // find all available forms
+      Accountor(accounts, isHeadless, proxy)        // login all accounts
    ])                 
    
    let reRun = 0
@@ -98,11 +100,11 @@ async function tool(keyword='Hirabari',
    }
 }
 
-async function main(capture=false, reverseForms=false) {
+async function main(capture=false, reverseForms=false, proxy=false) {
    const keyword = "Tosan"
    const headless = false
    const maxRenit = 0
-   tool(keyword, headless, capture, maxRenit, reverseForms, false, false, [], true)
+   tool(keyword, headless, capture, maxRenit, reverseForms, false, false, [], true, proxy)
 }
 
 async function onday(capture=false, reverseForms=false) {
@@ -112,16 +114,16 @@ async function onday(capture=false, reverseForms=false) {
    tool(keyword, headless, capture, maxRenit, reverseForms, false, true, [], true)
 }
 
-async function test(){
-
-   let finderBrowser = await new ProxyBrowser().newBrowser({ headless: 'new' })
+async function test(proxy=false) {
+   let finderBrowser = await new ProxyBrowser(proxy).newBrowser({ headless: 'new' })
    let accountBrowsers = []
    for (let i=0; i<config.accounts.length; i++) {
-      const accountBrowser = await new ProxyBrowser().newBrowser({ headless: false })
+      const accountBrowser = await new ProxyBrowser(proxy).newBrowser({ headless: false })
       accountBrowsers.push(accountBrowser)
    }
 
-   new Pipeline.Pipeline([
+   let pipeline = new Pipeline.Pipeline(
+      new Pipes([
       async () => init(),
       async () => 
          await Promise.all([
@@ -129,7 +131,10 @@ async function test(){
             FinderWorker(finderBrowser),
             DistributorWorker(),
          ]),
-      ]).run()
+      ])
+   )
+
+   await pipeline.run()
 
 }
 
@@ -138,6 +143,7 @@ program
    .option('--tool')
    .option('--test')
    .option('--onday')
+   .option('--proxy')
    .option('--keyword <string>')
    .option('--max-renit <number>')
    .option('--reverse-forms')
@@ -159,30 +165,30 @@ if (options.tool === true) {
    catch (error) {
       console.log('Cannot parse templateSeqs or templateSeqs is empty')
    }
-   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, templateSeqs, options.showCustomerData)
+   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, templateSeqs, options.showCustomerData, options.proxy)
 }
 else if (options.drop === true) {
    // console.log('Cannot perform this action in this version')
    formEliminator.droper(options.capture)
 }
 else if (options.test === true) {
-   test()
+   await test(proxy)
 }
 else if (options.onday === true) {
    let capture = true
-   onday(capture, options.reverseForms)
+   await onday(capture, options.reverseForms)
 }
 else {
    let capture = true
-   main(capture, options.reverseForms)
+   await main(capture, options.reverseForms, options.proxy)
 }
 
 
 // nexe app.js --build --verbose -t window
 // node app --drop
-// node app --tool --keyword='GY' --capture
+// node app --tool --keyword='GY' --capture --proxy
 // node app --tool --keyword='Hirabari' --capture --template-seqs "88006,88007,88008,88009,88010"
-// node app --tool --keyword='Hirabari' --capture
-// node app --tool --keyword='Hirabari' --capture --hidden --show-customer-data
-// node app --tool --keyword='Tosan' --capture
+// node app --tool --keyword='Hirabari' --capture --proxy
+// node app --tool --keyword='Hirabari' --capture --hidden --show-customer-data --proxy
+// node app --tool --keyword='Tosan' --capture --proxy
 

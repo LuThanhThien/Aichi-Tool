@@ -2,8 +2,12 @@ import { log } from '../../log.js'
 import Pipes from './Pipes.js'
 
 class Pipeline {
-   constructor (pipeline = []) {
-      this.pipeline = pipeline.constructor === Pipes ? pipeline : new Pipes(pipeline)
+   /**
+    * @param {Pipes} pipes 
+    */
+   constructor (pipes = []) {
+      this.pipeline = pipes.constructor === Pipes ? pipes : new Pipes(pipes)
+      // console.log(this.pipeline)
       this.log = []
    }
    
