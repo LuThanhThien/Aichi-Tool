@@ -1,1 +1,57 @@
-[]
+[
+  {
+    "title": "＜01月19日(金) 13:30～14:45＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月05日 07時30分",
+    "endDate": "2024年01月17日 12時00分",
+    "templateSeq": 88532,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=88532&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 86304000
+  },
+  {
+    "title": "＜01月19日(金) 12:45～13:30＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月05日 07時30分",
+    "endDate": "2024年01月17日 12時00分",
+    "templateSeq": 88531,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=88531&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 86304000
+  },
+  {
+    "title": "＜01月19日(金) 10:30～11:45＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月05日 07時30分",
+    "endDate": "2024年01月17日 12時00分",
+    "templateSeq": 88530,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=88530&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 86304000
+  },
+  {
+    "title": "＜01月19日(金) 09:30～10:30＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月05日 07時30分",
+    "endDate": "2024年01月17日 12時00分",
+    "templateSeq": 88529,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=88529&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 86304000
+  },
+  {
+    "title": "＜01月19日(金) 08:45～09:30＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月05日 07時30分",
+    "endDate": "2024年01月17日 12時00分",
+    "templateSeq": 88528,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=88528&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 86304000
+  }
+]
