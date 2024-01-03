@@ -1,0 +1,38 @@
+Cannot parse templateSeqs
+[2023-12-25 05:19:13] [MAIN] ALL BEGIN: keyword = 'Tosan', maxRenit = 10000, headless = false, capture = true, test = false, reverseForms = false, hidden = false, templateSeqs = 
+[2023-12-25 05:19:13] [davidalaba00000@gmail.com] Log in account - BEGIN
+[2023-12-25 05:19:13] [ble79037@gmail.com] Log in account - BEGIN
+[2023-12-25 05:19:13] [benemmai380@gmail.com] Log in account - BEGIN
+[2023-12-25 05:19:31] [benemmai380@gmail.com] Logged in account - SUCCESS
+[2023-12-25 05:19:31] [MAIN] Filter finished
+[2023-12-25 05:19:32] [davidalaba00000@gmail.com] Logged in account - SUCCESS
+[2023-12-25 05:19:32] [MAIN] Display 50 forms finished
+[2023-12-25 05:19:34] [ble79037@gmail.com] Logged in account - SUCCESS
+[2023-12-25 05:19:34] [MAIN] All accounts logged in - DONE: 3 SUCCESS, 0 FAILED
+[2023-12-25 05:19:34] [MAIN] Find available finished. Total links found: 4
+[2023-12-25 05:19:34] [MAIN] Collecting forms finished
+[2023-12-25 05:19:36] [MAIN] Find available finished. Total links found: 4
+[2023-12-25 05:19:36] [davidalaba00000@gmail.com] Auto fill form 01月09日(火) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:19:36] [ble79037@gmail.com] Auto fill form 01月09日(火) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:19:36] [benemmai380@gmail.com] Auto fill form 01月09日(火) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:19:39] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87282&accessFrom=offerList - SUCCESS
+[2023-12-25 05:19:39] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87282&accessFrom=offerList - SUCCESS
+[2023-12-25 05:19:39] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87282&accessFrom=offerList - SUCCESS
+[2023-12-25 05:30:24] [ble79037@gmail.com] Auto fill form 01月09日(火) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam finished - FAILED
+[2023-12-25 05:30:24] [ble79037@gmail.com] Auto fill form 01月10日(水) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:30:30] [davidalaba00000@gmail.com] Auto fill form 01月09日(火) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam finished - SUCCESS
+[2023-12-25 05:30:30] [davidalaba00000@gmail.com] Auto fill form 01月10日(水) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:30:33] [benemmai380@gmail.com] Auto fill form 01月09日(火) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam finished - SUCCESS
+[2023-12-25 05:30:33] [benemmai380@gmail.com] Auto fill form 01月10日(水) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:30:34] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87283&accessFrom=offerList - SUCCESS
+[2023-12-25 05:30:40] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87283&accessFrom=offerList - SUCCESS
+[2023-12-25 05:30:42] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87283&accessFrom=offerList - SUCCESS
+[2023-12-25 05:30:58] [ble79037@gmail.com] Auto fill form 01月10日(水) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam finished - SUCCESS
+[2023-12-25 05:30:58] [ble79037@gmail.com] Auto fill form 01月11日(木) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:31:05] [benemmai380@gmail.com] Auto fill form 01月10日(水) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam finished - SUCCESS
+[2023-12-25 05:31:05] [benemmai380@gmail.com] Auto fill form 01月11日(木) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:31:07] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87285&accessFrom=offerList - SUCCESS
+[2023-12-25 05:31:10] [davidalaba00000@gmail.com] Auto fill form 01月10日(水) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam finished - SUCCESS
+[2023-12-25 05:31:10] [davidalaba00000@gmail.com] Auto fill form 01月11日(木) 13:30[東三]外国免許切替一次審査 Tosan Exchanging Foreign Driver's License 1st Exam begin
+[2023-12-25 05:31:16] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87285&accessFrom=offerList - SUCCESS
+[2023-12-25 05:31:21] [undefined] Navigate to https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=87285&accessFrom=offerList - SUCCESS
