@@ -114,7 +114,10 @@ async function finder(page, keyword=args.keyword, reverseForms=false, hidden=fal
             availableItem = availableItem.filter(item => !item.title.includes('＜'))
             // availableItem = availableItem.filter(item => !item.title.includes('<'))
 
+            if (reverseForms) { return availableItem.reverse() }
+            else { return availableItem }
          }
+
          // const aboutToClose = "もうすぐ終了"
          // const upcomingStatus = "近日受付開始"
          const passedStatus = "受付終了しました" 
@@ -136,6 +139,7 @@ async function finder(page, keyword=args.keyword, reverseForms=false, hidden=fal
       let totalFormsFound = availableItem.length
       let isLog = (totalFormsFound > 0) ? true : false
       _log("Find available finished. Total links found: " + availableItem.length, null, isLog)
+
       if (reverseForms) { return availableItem.reverse() }
       else { return availableItem }
    }
