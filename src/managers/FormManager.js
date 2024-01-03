@@ -113,7 +113,10 @@ async function finder(page, keyword=args.keyword, reverseForms=false, hidden=fal
             // availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
             availableItem = availableItem.filter(item => !item.title.includes('＜'))
             // availableItem = availableItem.filter(item => !item.title.includes('<'))
-
+            
+            let totalFormsFound = availableItem.length
+            let isLog = (totalFormsFound > 0) ? true : false
+            _log("Find available finished. Total links found: " + availableItem.length, null, isLog)
             if (reverseForms) { return availableItem.reverse() }
             else { return availableItem }
          }

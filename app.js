@@ -12,6 +12,7 @@ import Finder from './src/components/Finder.js'
 import Accountor from './src/components/Accountor.js'
 import Distributor from './src/components/Distributor.js'
 import Filler from './src/components/Filler.js'
+import utils from './src/utils.js'
 
 
 // init logger
@@ -45,25 +46,31 @@ async function tool(keyword='Hirabari',
    ])                 
    
    let reRun = 0
+   let isReloaded = false
    let disPages = []                        
    let failStore = []
    let totalSuccess = 0
    while (true) {
       // DISTRIBUTE FORMS TO ACCOUNTS IN ADVANCE
-      [
+      [  isReloaded,
          listForms,
          disPages 
       ] = await Promise.all([
+         utils.reloadPage(formPage),
          formManager.finder(formPage, keyword, reverseForms, hidden, templateSeqs),  // re-find all available forms
-         Distributor(loggedPages, accounts, keyword, maxForms, showCustomerData, hidden, fake)       // distribute forms to accounts
+         Distributor(loggedPages, accounts, keyword, maxForms, showCustomerData, hidden, fake),       // distribute forms to accounts,
       ])
 
+      
       // REALOAD DISPAGES
       if (reRun % 20 === 0 && reRun !== 0) {
          log(`RELOAD ACCOUNT PAGES`, loggedPages.account, false)
-         await Promise.all(disPages.map(async () => {
+         await Promise.all(disPages.map(async (thisPage) => {
+            await utils.reloadPage(thisPage)
          }))
       }
+
+      if (listForms.length === 0) { continue }
 
       let filledForms = formManager.importJSON(global.dir.out.jsonAccountList) || {}   // store filled forms
       // AUTO FILL FORMS
