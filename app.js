@@ -144,7 +144,7 @@ else {
    let capture = true
    // await main(capture, options.reverseForms, options.proxy)
    // --keyword='Hirabari' --capture --hidden --show-customer-data --proxy --fake
-   tool('Hirabari', true, true, 10000, false, false, true, true, [], true, true)
+   tool('Hirabari', false, true, 10000, false, false, true, false, [], true, true)
    // --keyword='Hirabari' --capture --hidden --show-customer-data --proxy 
    // tool('Hirabari', true, true, 10000, false, false, true, false, [], true, true)
 }
