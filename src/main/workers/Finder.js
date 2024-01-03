@@ -1,7 +1,8 @@
 import config from '../../configure/config.js'
 import utils from '../../utils.js'
+import global from '../../configure/global.js'
 import { Browser } from 'puppeteer'
-import OfferList from '../html/OfferList.js'
+import OfferList from '../page/OfferList.js'
 import Pipeline from '../../main/lib/Pipeline.js'
 import Pipes from '../../main/lib/Pipes.js'
 import Form from '../domain/Form.js'
@@ -17,6 +18,7 @@ async function Finder(finderBrowser) {
       config.args.displayNumber, 
       mainPage
       )
+   global.lists.formList = OfferListObj.formList
    let PipelineMain = new Pipeline.Pipeline()
 
    let pipes = new Pipes([

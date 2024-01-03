@@ -1,4 +1,4 @@
-import map from '../../configure/map.js'
+import global from '../../configure/global.js'
 import utils from '../../utils.js'
 import {log } from '../../log.js'
 
@@ -66,7 +66,7 @@ class DataList extends Array {
    ** @param {Function} DataClass
    */
    _getJSONPath(DataClass) {
-      const path = map[DataClass.name]
+      const path = global.map[DataClass.name]
       if (path) {
          return path
       }

@@ -1,5 +1,5 @@
 import config from './configure/config.js'
-import dir from './configure/dir.js'
+import global from './configure/global.js'
 import { writeFileSync, writeFile, readFileSync } from 'fs'
 import { log } from './log.js'
 
@@ -109,7 +109,7 @@ function isPast(stringDate=null) {
 
 
 // API for interact between workers
-function exportJSON(disForms, path=dir.out.json.OfferList) {
+function exportJSON(disForms, path=global.dir.out.json.OfferList) {
    let json = JSON.stringify(disForms, null, 2) // The third argument (2) is for indentation
    writeFile(path, json, 'utf8', (err) => {
       if (err) {
@@ -120,7 +120,7 @@ function exportJSON(disForms, path=dir.out.json.OfferList) {
    // logger.log("JSON data has been written to " + path)
 }
 
-function importJSON(path=dir.out.jsonFormList) {
+function importJSON(path=global.dir.out.jsonFormList) {
    try {
       const jsonString = readFileSync(path, 'utf8')
       const jsonObject = JSON.parse(jsonString) 

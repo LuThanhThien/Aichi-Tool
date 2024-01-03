@@ -2,7 +2,7 @@ import config from '../configure/config.js';
 import { log as _log } from '../log.js';
 const fake = config.fake
 const args = config.args
-const _customerData = config.customerData
+let _customerData = config.customerData
 
 function generate(prob=0.4) {
    // This function is used to generate random customer data
@@ -29,22 +29,42 @@ function getRandomPhoneNumbers(mainPhoneNumber, phoneNumberArray, prob=0.4) {
    return result[0];
 }
 
-async function distribute(loggedPages, accounts, keyword, maxForms=3, showCustomerData=false, hidden=false) {
+async function distribute(loggedPages, accounts, keyword, maxForms=3, showCustomerData=false, hidden=false, fake=false) {
    let prob = (keyword === 'Tosan') ? 0 : 1
    let disPages = []                            // store distributed pages
    const numAccounts = accounts.length          // number of accounts
-   if (hidden === true && keyword === 'Hirabari') {
-      for (let i=0; i<_customerData.length; i++) {
-         for (let j=0; j<numAccounts; j++) {
+   if (hidden === true && keyword === 'Hirabari' && fake === false) {
+      for (let j=0; j<numAccounts; j++) {
+         disPages.push({
+            account: loggedPages[j].account,
+            browser: loggedPages[j].browser, 
+            page: loggedPages[j].page, 
+            isAvailable: loggedPages[j].isAvailable, 
+            info: [],
+         })
+         for (let i=0; i<_customerData.length; i++) {
+            disPages[j].info.push(_customerData[i])
+         }
+      }
+   }
+   else if (fake === true) {
+      for (let i=0; i<numAccounts*maxForms; i++) {
+         let info = generate(prob);
+         let j = i % numAccounts
+         if (i < numAccounts) {
             disPages.push({
                account: loggedPages[j].account,
                browser: loggedPages[j].browser, 
                page: loggedPages[j].page, 
                isAvailable: loggedPages[j].isAvailable, 
-               info: [_customerData[i]],
+               info: [info],
             })
          }
+         else {
+            disPages[j].info.push(info)
+         }
       }
+      _customerData = []
    }
    else {
       for (let i=0; i<numAccounts*maxForms; i++) {

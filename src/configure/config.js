@@ -1,6 +1,6 @@
 import { load as _load_yaml } from 'js-yaml'
 import { load as _load_csv } from 'csv-load-sync'
-import dir from './dir.js'
+import global from './global.js'
 import { readFileSync } from 'fs'
 
 // URLs
@@ -56,16 +56,19 @@ const accounts = [
    // TOSAN main
    { username: 'nihahi50@gmail.com', password: 'hoahong1234' },
    { username: 'davidalaba00000@gmail.com', password: 'hoahong1234' },
-   // { username: 'ble79037@gmail.com', password: 'hoahong1234' },
+   { username: 'ble79037@gmail.com', password: 'hoahong1234' },
    // { username: 'benemmai380@gmail.com', password: 'hoahong1234' },
+   // HIRABARI only day test
+   // { username: 'Nickpown0411@gmail.com', password: 'hoahong1234' },
+   // { username: 'Jamebrown0206@gmail.com', password: 'hoahong1234' },
 ]
 
 
 // INPUT 
 const columns = ["firstName","lastName","dateBirth","gender","nation","country","phoneNumberHash"]
-const customerData = _load_csv(dir.input.csvCustomers)
-const args = _load_yaml(readFileSync(dir.input.yamlArgs), 'utf8')
-const fake = _load_yaml(readFileSync(dir.input.yamlFake), 'utf8')
+const customerData = _load_csv(global.dir.input.csvCustomers)
+const args = _load_yaml(readFileSync(global.dir.input.yamlArgs), 'utf8')
+const fake = _load_yaml(readFileSync(global.dir.input.yamlFake), 'utf8')
 const proxyServer = `${args.proxy.host}:${args.proxy.port}`;
 
 

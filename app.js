@@ -1,30 +1,17 @@
 import { program } from 'commander'
+import { logger as _logger, log } from './src/log.js'
 import config from './src/configure/config.js'
-import dir from './src/configure/dir.js'
-import utils from './src/utils.js'
+import global from './src/configure/global.js'
 
 // objects
 import formEliminator from './src/managers/FormInquery.js'
 import formManager from './src/managers/FormManager.js'
 
 // workers 
-import { logger as _logger, log } from './src/log.js'
 import Finder from './src/components/Finder.js'
 import Accountor from './src/components/Accountor.js'
 import Distributor from './src/components/Distributor.js'
 import Filler from './src/components/Filler.js'
-
-// lib
-import ProxyBrowser from './src/main/lib/ProxyPuppeteer.js'
-import Pipeline from './src/main/lib/Pipeline.js'
-import Pipes from './src/main/lib/Pipes.js'
-
-// new workers
-import FinderWorker from './src/main/workers/Finder.js'
-import GuardianWorker from './src/main/workers/Guardian.js'
-import DistributorWorker from './src/main/workers/Distributor.js'
-import init from './src/init.js'
-import puppeteer from 'puppeteer'
 
 
 // init logger
@@ -38,6 +25,7 @@ async function tool(keyword='Hirabari',
                      reverseForms=false,
                      multiForms=false,
                      hidden=false,
+                     fake=false,
                      templateSeqs=[],
                      showCustomerData=false,
                      proxy=false) {
@@ -45,7 +33,7 @@ async function tool(keyword='Hirabari',
    const isHeadless = (headless === false) ? false: 'new'            // headless mode
    let maxForms = 3                                                  // max number of forms per account
    const test = (keyword === 'Hirabari' || keyword === 'Tosan') ? false : true   // test mode
-   log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, templateSeqs = ${templateSeqs}, showCustomerData = ${showCustomerData}, proxy = ${proxy}`)   // start time
+   log(`ALL BEGIN: keyword = '${keyword}', maxRenit = ${maxRenit}, headless = ${headless}, capture = ${capture}, test = ${test}, reverseForms = ${reverseForms}, hidden = ${hidden}, fake = ${fake}, templateSeqs = ${templateSeqs}, showCustomerData = ${showCustomerData}, proxy = ${proxy}`)   // start time
    
    // FIND ALL AVAILABLE FORMS AND STORE AND LOGIN ALL ACCOUNTS IN ADVANCE
    let [ 
@@ -67,7 +55,7 @@ async function tool(keyword='Hirabari',
          disPages 
       ] = await Promise.all([
          formManager.finder(formPage, keyword, reverseForms, hidden, templateSeqs),  // re-find all available forms
-         Distributor(loggedPages, accounts, keyword, maxForms, showCustomerData, hidden)       // distribute forms to accounts
+         Distributor(loggedPages, accounts, keyword, maxForms, showCustomerData, hidden, fake)       // distribute forms to accounts
       ])
 
       // REALOAD DISPAGES
@@ -77,7 +65,7 @@ async function tool(keyword='Hirabari',
          }))
       }
 
-      let filledForms = formManager.importJSON(dir.out.jsonAccountList) || {}   // store filled forms
+      let filledForms = formManager.importJSON(global.dir.out.jsonAccountList) || {}   // store filled forms
       // AUTO FILL FORMS
       failStore, totalSuccess, filledForms = await Filler(disPages, listForms, filledForms, capture, test, multiForms, hidden)
 
@@ -91,7 +79,7 @@ async function tool(keyword='Hirabari',
       if (totalSuccess > 0) {
          console.log(`TOTAL SUCCESSFUL FORMS: ${totalSuccess}`)
       }
-      formManager.exportJSON(filledForms, dir.out.jsonAccountList)
+      formManager.exportJSON(filledForms, global.dir.out.jsonAccountList)
       
       await new Promise(r => setTimeout(r, 1000))
 
@@ -114,34 +102,10 @@ async function onday(capture=false, reverseForms=false) {
    tool(keyword, headless, capture, maxRenit, reverseForms, false, true, [], true)
 }
 
-async function test(proxy=false) {
-   let finderBrowser = await new ProxyBrowser(proxy).newBrowser({ headless: 'new' })
-   let accountBrowsers = []
-   for (let i=0; i<config.accounts.length; i++) {
-      const accountBrowser = await new ProxyBrowser(proxy).newBrowser({ headless: false })
-      accountBrowsers.push(accountBrowser)
-   }
-
-   let pipeline = new Pipeline.Pipeline(
-      new Pipes([
-      async () => init(),
-      async () => 
-         await Promise.all([
-            GuardianWorker(accountBrowsers),
-            FinderWorker(finderBrowser),
-            DistributorWorker(),
-         ]),
-      ])
-   )
-
-   await pipeline.run()
-
-}
 
 program
    .option('--drop')
    .option('--tool')
-   .option('--test')
    .option('--onday')
    .option('--proxy')
    .option('--keyword <string>')
@@ -150,6 +114,7 @@ program
    .option('--headless')   
    .option('--capture')
    .option('--hidden')
+   .option('--fake')
    .option('--template-seqs <string>')
    .option('--multi-forms')
    .option('--show-customer-data')
@@ -165,14 +130,11 @@ if (options.tool === true) {
    catch (error) {
       console.log('Cannot parse templateSeqs or templateSeqs is empty')
    }
-   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, templateSeqs, options.showCustomerData, options.proxy)
+   tool(options.keyword, options.headless, options.capture, options.maxRenit, options.reverseForms, options.multiForms, options.hidden, options.fake, templateSeqs, options.showCustomerData, options.proxy)
 }
 else if (options.drop === true) {
    // console.log('Cannot perform this action in this version')
    formEliminator.droper(options.capture)
-}
-else if (options.test === true) {
-   await test(proxy)
 }
 else if (options.onday === true) {
    let capture = true

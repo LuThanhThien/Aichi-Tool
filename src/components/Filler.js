@@ -35,6 +35,7 @@ export default async function(disPages, listForms, filledForms={}, capture=false
       let n = 0
       
       if (multiForms == false) {
+         // console.log('multiForms == false')
          while (totalForms > 0 && n < listForms.length) {
             const thisForm = listForms[n]
             if (filledForms[thisAccount.username].includes(thisForm.title)) {

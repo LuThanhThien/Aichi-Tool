@@ -1,7 +1,7 @@
 // Description: This file contains the functions that are used to manage the forms.
 import { writeFile, readFileSync } from 'fs'  
 import config from '../configure/config.js'
-import dir from '../configure/dir.js'
+import global from '../configure/global.js'
 import utils from '../utils.js'
 import { log as _log, logPath as _logPath } from '../log.js'
 import 'fs'
@@ -110,13 +110,15 @@ async function finder(page, keyword=args.keyword, reverseForms=false, hidden=fal
       else {
          availableItem = availableItem.sort(customSort)                                      // sort by date
          if (hidden === true) { // using for hidden Hiraibari forms
-            availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
-            availableItem = availableItem.filter(item => !item.title.includes('<'))
+            // availableItem = availableItem.filter(item => item.isAvailable === true)            // ignore unavailable forms
+            availableItem = availableItem.filter(item => !item.title.includes('＜'))
+            // availableItem = availableItem.filter(item => !item.title.includes('<'))
+
          }
          // const aboutToClose = "もうすぐ終了"
          // const upcomingStatus = "近日受付開始"
          const passedStatus = "受付終了しました" 
-         const endedStatus = "終了しました"
+         const endedStatus = "終了しました"  
          availableItem = availableItem.filter(item => item.status !== passedStatus)          // ignore passed forms
          availableItem = availableItem.filter(item => item.status !== endedStatus)           // ignore ended forms
       }
@@ -394,7 +396,7 @@ async function findInqueryForms(page) {
 
 
 // API for interact between workers
-function exportJSON(disForms, path=dir.out.jsonFormList) {
+function exportJSON(disForms, path=global.dir.out.jsonFormList) {
    let json = JSON.stringify(disForms, null, 2) // The third argument (2) is for indentation
    writeFile(path, json, 'utf8', (err) => {
       if (err) {
@@ -405,7 +407,7 @@ function exportJSON(disForms, path=dir.out.jsonFormList) {
    // logger.log("JSON data has been written to " + path)
 }
 
-function importJSON(path=dir.out.jsonFormList) {
+function importJSON(path=global.dir.out.jsonFormList) {
    try {
       const jsonString = readFileSync(path, 'utf8')
       const jsonObject = JSON.parse(jsonString)
@@ -419,7 +421,7 @@ function importJSON(path=dir.out.jsonFormList) {
    }
 }
 
-function checkJSON(newJSONObj, path=dir.out.jsonFormList) {
+function checkJSON(newJSONObj, path=global.dir.out.jsonFormList) {
    try {
       const oldJSONObj = importJSON(path)
       for (let i = 0 ; i < oldJSONObj.length ; i++) {
