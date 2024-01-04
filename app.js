@@ -65,7 +65,7 @@ async function tool(keyword='Hirabari',
          log(`RELOAD ACCOUNT PAGES`, loggedPages.account, false)
          await Promise.all(disPages.map(async (thisPage) => {
             await utils.reloadPage(thisPage)
-         }))
+         }))   
       }
 
       if (listForms.length === 0) { continue }
