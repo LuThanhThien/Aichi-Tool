@@ -55,7 +55,7 @@ const accounts = [
    // TOSAN main
    { username: 'nihahi50@gmail.com', password: 'hoahong1234' },
    { username: 'davidalaba00000@gmail.com', password: 'hoahong1234' },
-   // { username: 'ble79037@gmail.com', password: 'hoahong1234' },
+   { username: 'ble79037@gmail.com', password: 'hoahong1234' },
    // { username: 'benemmai380@gmail.com', password: 'hoahong1234' },
    // HIRABARI only day test
    // { username: 'Nickpown0411@gmail.com', password: 'hoahong1234' },
