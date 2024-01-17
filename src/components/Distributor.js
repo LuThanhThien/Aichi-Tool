@@ -33,17 +33,34 @@ async function distribute(loggedPages, accounts, keyword, maxForms=3, showCustom
    let prob = (keyword === 'Tosan') ? 0 : 1
    let disPages = []                            // store distributed pages
    const numAccounts = accounts.length          // number of accounts
+   const customerDataLength = _customerData.length 
    if (hidden === true && keyword === 'Hirabari' && fake === false) {
-      for (let j=0; j<numAccounts; j++) {
+      let accountIndex = 0
+      let customerIndex = 0
+      let isFillAll = false
+      let infoPerAccount = 0
+      while (true) {
          disPages.push({
-            account: loggedPages[j].account,
-            browser: loggedPages[j].browser, 
-            page: loggedPages[j].page, 
-            isAvailable: loggedPages[j].isAvailable, 
+            account: loggedPages[accountIndex].account,
+            browser: loggedPages[accountIndex].browser, 
+            page: loggedPages[accountIndex].page, 
+            isAvailable: loggedPages[accountIndex].isAvailable, 
             info: [],
          })
-         for (let i=0; i<_customerData.length; i++) {
-            disPages[j].info.push(_customerData[i])
+         disPages[accountIndex].info.push(_customerData[customerIndex])
+         accountIndex += 1
+         customerIndex += 1
+         if (accountIndex >= numAccounts) {
+            accountIndex = 0
+            isFillAll = true
+            infoPerAccount += 1
+         }
+         if (customerIndex >= customerDataLength) {
+            if (isFillAll === true && infoPerAccount >= maxForms) {
+               break
+            } else {
+               customerIndex = 0
+            }
          }
       }
    }
