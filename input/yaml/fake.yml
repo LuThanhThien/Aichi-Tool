@@ -107,9 +107,9 @@ phoneNumberHash:
   - '080-7774-4440'
   - '080-8885-5550'
 nation:
-  - '151'
+  - 'ベトナム'
 country:
-  - '150'
+  - 'ベトナム'
 schoolName:
   - Katana
   - Samurai
