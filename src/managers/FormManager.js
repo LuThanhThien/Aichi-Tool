@@ -199,6 +199,16 @@ async function collector(page, keyword=args.keyword, displayNumber=args.displayN
 }
 
 
+async function selectOptionsByText(selectElement, text) {
+   const options = selectElement.options;
+   for (let i = 0; i < options.length; i++) {
+       if (options[i].text === text) {
+           options[i].selected = true;
+           break;
+       }
+   }
+}
+
 async function filler(newPage, account, form, i, capture=false, test=false, info) {   
    const beginUrl = newPage.url()
    const logPath = `${_logPath}/${account.username}` // path to save log
@@ -264,7 +274,8 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
       examinNumber: fake.examinNumber[Math.random() * fake.examinNumber.length | 0],
    }
    try {
-      await newPage.evaluate((fakeInfo, test, info) => {
+      await newPage.evaluate((fakeInfo, test, info, selectOptionsByText) => {
+         const selectOptionsByTextFunc = new Function(`return ${selectOptionsByText}`)()
          if (test) {
             // var form = document.getElementById('offerForm')
             // form.submit()
@@ -275,6 +286,9 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
             radios[(info.gender === 'M') ? 0 : 1].checked = true
             document.getElementsByName("item[4].textData")[0].value = fakeInfo.phoneNumber
             document.getElementsByName("item[5].textData")[0].value = fakeInfo.schoolName
+            // const prefactureSelector = document.getElementsByName("item[6].selectData")[0]
+            // selectOptionsByTextFunc(prefactureSelector, "山形県")
+
             document.getElementsByName("item[7].textData")[0].value = fakeInfo.dateGrad
             document.getElementsByName("item[8].textData")[0].value = fakeInfo.examinNumber
          } else {
@@ -282,13 +296,17 @@ async function filler(newPage, account, form, i, capture=false, test=false, info
             document.getElementsByName("item[0].textData")[0].value = info.lastName
             document.getElementsByName("item[1].textData")[0].value = info.dateBirth
             document.getElementsByName("item[5].textData")[0].value = info.phoneNumberHash
-            document.getElementsByName("item[2].selectData")[0].value = info.nation
-            document.getElementsByName("item[3].selectData")[0].value = info.country
+            // document.getElementsByName("item[2].selectData")[0].value = info.nation
+            // document.getElementsByName("item[3].selectData")[0].value = info.country
+            const nationSelector = document.getElementsByName("item[2].selectData")[0]
+            const countrySelector = document.getElementsByName("item[3].selectData")[0]
+            selectOptionsByTextFunc(nationSelector, info.nation)
+            selectOptionsByTextFunc(countrySelector, info.country)
             const radios = document.querySelectorAll(`input[name="item[4].selectData"]`)
             radios[(info.gender === 'M') ? 0 : 1].checked = true
          }
          document.querySelectorAll('input[type="checkbox"]')[0].checked = true
-      }, fakeInfo, test, info)
+      }, fakeInfo, test, info, selectOptionsByText.toString())
 
       const focusSubmitHTML = `input[name='item[0].textData']`
       try {

@@ -1,1 +1,46 @@
-[]
+[
+  {
+    "title": "＜02月02日(金) 09:30～10:30＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月19日 07時30分",
+    "endDate": "2024年01月31日 12時00分",
+    "templateSeq": 89631,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=89631&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 557000
+  },
+  {
+    "title": "＜02月02日(金) 10:30～11:45＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月19日 07時30分",
+    "endDate": "2024年01月31日 12時00分",
+    "templateSeq": 89632,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=89632&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 557000
+  },
+  {
+    "title": "＜02月02日(金) 12:45～13:30＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月19日 07時30分",
+    "endDate": "2024年01月31日 12時00分",
+    "templateSeq": 89633,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=89633&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 557000
+  },
+  {
+    "title": "＜02月02日(金) 13:30～14:45＞[平針]外国免許切替審査 Hirabari Exchanging Foreign Driver's License",
+    "status": "近日受付開始",
+    "startDate": "2024年01月19日 07時30分",
+    "endDate": "2024年01月31日 12時00分",
+    "templateSeq": 89635,
+    "link": "https://www.shinsei.e-aichi.jp/pref-aichi-police-u/offer/offerList_detailTop?tempSeq=89635&accessFrom=offerList",
+    "isAvailable": false,
+    "isPast": false,
+    "distance": 557000
+  }
+]
