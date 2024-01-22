@@ -42,10 +42,10 @@ const accounts = [
    // { username: 'piechipeach@gmail.com', password: 'aichi@5921'},     
    // { username: 'nqkhanhtoan@gmail.com', password: 'aichi@5921'},     
    // TOSAN main
-   // { username: 'nihahi50@gmail.com', password: 'hoahong1234' },
-   // { username: 'davidalaba00000@gmail.com', password: 'hoahong1234' },
-   // { username: 'ble79037@gmail.com', password: 'hoahong1234' },
-   { username: 'benemmai380@gmail.com', password: 'hoahong1234' },
+   { username: 'nihahi50@gmail.com', password: 'hoahong1234' },
+   { username: 'davidalaba00000@gmail.com', password: 'hoahong1234' },
+   { username: 'ble79037@gmail.com', password: 'hoahong1234' },
+   // { username: 'benemmai380@gmail.com', password: 'hoahong1234' },
    // HIRABARI only day test 
    // { username: 'Nickpown0411@gmail.com', password: 'hoahong1234' },
    // { username: 'marjyamada040493@gmail.com', password: 'Marj0409'},
@@ -53,8 +53,8 @@ const accounts = [
    // NEW EMAILS (2024-01-17)
    // { username: 'hoahong2546@gmail.com', password: 'hoahong1234' },            // sai mk
    // { username: 'tuanminhnguyen1508@gmail.com', password: 'hoahong1234' },     // sai mk
-   { username: 'leongnardo12@gmail.com', password: 'hoahong1234' },             
-   { username: 'ngtrnghi123@gmail.com', password: 'hoahong1234' },
+   // { username: 'leongnardo12@gmail.com', password: 'hoahong1234' },             
+   // { username: 'ngtrnghi123@gmail.com', password: 'hoahong1234' },
    // { username: 'thanhvanngoc30@gmail.com', password: 'hoahong1234' },
    // { username: 'haronalcr7@gmail.com', password: 'hoahong1234' },             // sai mk  
    // { username: 'tlica9443@gmail.com', password: 'hoahong1234' },                 // sai mk
